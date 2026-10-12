@@ -1,50 +1,61 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Drum Sync Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Escenarios Gherkin Automatizados (NON-NEGOTIABLE)
+Todo comportamiento del producto MUST describirse como escenarios Gherkin (Given/When/Then)
+y MUST estar automatizado con Playwright. Cada spec MUST traer sus escenarios, y esos
+escenarios MUST existir como pruebas ejecutables antes de dar la implementación por terminada.
+Rationale: los escenarios son el contrato verificable entre la spec y el código.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Commit Solo con Escenarios en Verde
+Antes de cada commit al repo se MUST ejecutar la suite completa de escenarios Playwright, no
+solo los de la feature actual. Si todos pasan, se puede commitear. Si alguno falla, se MUST
+consultar a un humano si el fallo puede dejarse para revisar después; sin su aprobación
+explícita NO se commitea. La aprobación se aplica solo a ese commit y el escenario fallido
+MUST registrarse como pendiente (por ejemplo en el mensaje del commit).
+Rationale: evita regresiones silenciosas y deja la decisión de excepciones en una persona.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Análisis OWASP Top 10 Antes de Commitear
+Antes de cada commit se MUST hacer un análisis de seguridad contra el OWASP Top 10 sobre los
+cambios. Las vulnerabilidades de severidad crítica o alta MUST corregirse antes del commit.
+Las de severidad media o baja SHOULD registrarse como pendientes. Complementa, sin
+reemplazar, las reglas de seguridad de AGENTS.md (Row Level Security, `service_role`, `safeStorage`).
+Rationale: la app maneja sesiones y datos de usuario en Supabase; la seguridad se verifica de
+forma continua y no solo al final.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Diseño Visual Aprobado Antes de Implementar
+Antes de implementar una spec que cambie la interfaz, se MUST mostrar a un humano un diseño
+en imagen del look & feel de los cambios, y esperar su aprobación. No se escribe código de
+interfaz hasta contar con esa aprobación. Si el diseño cambia durante la implementación,
+MUST volver a mostrarse.
+Rationale: detectar desacuerdos visuales antes de construir evita retrabajo.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+## Restricciones Técnicas
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+El stack, los comandos y las prohibiciones del proyecto (compatibilidad de partituras
+guardadas, independencia de Web MIDI, red fuera del camino del timing, Row Level Security,
+sesión cifrada con `safeStorage`) están definidos en `AGENTS.md` y MUST cumplirse. Ante un
+conflicto entre este documento y `AGENTS.md`, prevalece la regla más estricta.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Flujo de Desarrollo y Puertas de Calidad
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Orden obligatorio por cada spec:
+1. Spec con escenarios Gherkin.
+2. Diseño en imagen aprobado por un humano (Principio IV), si hay cambios de interfaz.
+3. Automatización de los escenarios en Playwright y su implementación.
+4. Antes de cada commit: suite completa en verde (Principio II) y análisis OWASP Top 10
+   con críticas y altas corregidas (Principio III).
+5. Commit con mensaje en Conventional Commits.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Esta constitución prevalece sobre otras prácticas del proyecto. Toda enmienda MUST
+documentarse en este archivo, con aprobación del responsable del proyecto y, si afecta a
+trabajo existente, un plan de migración. El versionado sigue semver: MAJOR para eliminar o
+redefinir principios de forma incompatible, MINOR para agregar un principio o sección o
+ampliar guía de forma material, PATCH para aclaraciones y correcciones de redacción. Cada
+spec, plan y revisión MUST verificar el cumplimiento de estos principios; cualquier
+excepción MUST justificarse por escrito. La guía de desarrollo en ejecución está en `AGENTS.md`.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-12
