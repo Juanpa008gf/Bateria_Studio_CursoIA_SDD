@@ -19,7 +19,11 @@ Rationale: evita regresiones silenciosas y deja la decisión de excepciones en u
 ### III. Análisis OWASP Top 10 Antes de Commitear
 Antes de cada commit se MUST hacer un análisis de seguridad contra el OWASP Top 10 sobre los
 cambios. Las vulnerabilidades de severidad crítica o alta MUST corregirse antes del commit.
-Las de severidad media o baja SHOULD registrarse como pendientes. Complementa, sin
+Las de severidad media o baja SHOULD registrarse como pendientes. La severidad se clasifica con
+la metodología OWASP Risk Rating: se estima la probabilidad y el impacto de cada hallazgo
+(bajo, medio o alto) y la severidad resulta de combinarlos:
+impacto alto con probabilidad media es alta y con probabilidad alta es crítica; impacto medio con
+probabilidad alta es alta. Complementa, sin
 reemplazar, las reglas de seguridad de AGENTS.md (Row Level Security, `service_role`, `safeStorage`).
 Rationale: la app maneja sesiones y datos de usuario en Supabase; la seguridad se verifica de
 forma continua y no solo al final.
@@ -58,4 +62,4 @@ ampliar guía de forma material, PATCH para aclaraciones y correcciones de redac
 spec, plan y revisión MUST verificar el cumplimiento de estos principios; cualquier
 excepción MUST justificarse por escrito. La guía de desarrollo en ejecución está en `AGENTS.md`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-12
+**Version**: 1.0.1 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-12

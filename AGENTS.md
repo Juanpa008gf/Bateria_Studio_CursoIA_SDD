@@ -25,4 +25,4 @@ npm test
 - No hacer que el editor ni la reproducción dependan de Web MIDI: si no está o se deniega el permiso, solo se deshabilitan la grabación y el Modo Práctica (RNF-07).
 - No poner la red en el camino del timing: la reproducción, la grabación y el Modo Práctica usan sonidos ya decodificados en memoria, nunca piden nada al servidor (RNF-15).
 - No crear una tabla ni un bucket con datos de usuario sin Row Level Security, y no incluir nunca la clave `service_role` en la app (RNF-14).
-- No guardar en la computadora más que la sesión, y siempre cifrada con `safeStorage` (RNF-13).
+- No guardar en la computadora más que la sesión y el borrador sin conexión de la partitura en curso (RF-39.6), siempre cifrados con `safeStorage` (RNF-13).

@@ -62,7 +62,10 @@ Drum Sync junta las tres en un solo lugar, deja escribir tocando, y agrega la qu
 - **RF-08.2**: El sistema debe permitir quitar el último compás.
 - **RF-08.3**: El sistema no debe permitir quitar el último compás cuando la partitura tiene un solo compás.
 - **RF-08.4**: El sistema no debe permitir que la partitura supere los 128 compases.
+- **RF-08.5**: Toda operación que obligue a superar los 128 compases debe descartar las notas que no entran y mostrar el mismo aviso de notas descartadas (RF-18.6). Hoy esto solo puede ocurrir por un cambio de compás (RF-18.5), porque una toma siempre arranca en el compás 1 y dura como máximo 128 compases (RF-14.1, RF-14.6).
 - **RF-09**: El sistema debe permitir deshacer cualquier cambio de la partitura, venga de la edición con el mouse o de una toma grabada.
+
+- **RF-09.1**: El historial de Deshacer debe conservar hasta los últimos 100 cambios, descartando el más antiguo al superar ese número, y debe perderse al cerrar la aplicación.
 
 ### Conexión con la batería MIDI
 
@@ -71,6 +74,7 @@ Drum Sync junta las tres en un solo lugar, deja escribir tocando, y agrega la qu
 - **RF-10.3**: Si Web MIDI no está disponible o el permiso se deniega, el sistema debe deshabilitar la grabación de tomas y el Modo Práctica.
 - **RF-10.4**: En ese caso, el sistema debe mostrar el motivo: "Web MIDI no está disponible" o "Permiso MIDI denegado", según corresponda.
 - **RF-10.5**: Si no puede abrir la entrada MIDI elegida porque otra aplicación la tiene tomada, el sistema debe mostrar el motivo "No se pudo abrir la entrada MIDI" y mantener deshabilitadas la grabación de tomas y el Modo Práctica.
+- **RF-10.6**: Si la batería se desconecta mientras se graba una toma o se practica, el sistema debe mostrar el aviso "Batería desconectada"; la toma debe terminar conservando los golpes ya escritos (RF-16.3) y el Modo Práctica debe detenerse dejando visible el feedback (RF-30.5).
 - **RF-11.1**: El sistema debe traer por defecto un mapeo General MIDI de percusión (notas 35–59).
 - **RF-11.2**: El sistema debe permitir reasignar cualquier nota MIDI recibida (0–127) a una pieza del kit.
 - **RF-12**: El sistema debe guardar el mapeo MIDI en la cuenta del usuario, de modo que la batería se configure una sola vez, aunque el usuario cambie de computadora. Hay un único mapeo por cuenta.
@@ -81,7 +85,9 @@ Drum Sync junta las tres en un solo lugar, deja escribir tocando, y agrega la qu
 Grabar una toma es escribir en la partitura con las baquetas en lugar del mouse (RF-14.2, RF-09).
 
 - **RF-14.1**: El sistema debe permitir grabar en la batería MIDI una toma de la cantidad de compases elegida, de 1 a 128.
-- **RF-14.2**: El sistema debe escribir cada golpe de la toma como una nota normal de la partitura, editable igual que una escrita con el mouse.
+- **RF-14.2**: El sistema debe escribir cada golpe de la toma como una nota de la partitura, editable igual que una escrita con el mouse.
+- **RF-14.8**: El sistema debe asignar a cada nota grabada una articulación según la intensidad del golpe (1 a 127): fantasma si es menor o igual que el umbral de fantasma, acento si es mayor o igual que el umbral de acento y normal en el resto. Por defecto el umbral de fantasma es 30 y el de acento es 100. El flam nunca se asigna por intensidad. Si dos golpes de la misma pieza se fusionan (RF-17.2), la nota toma la articulación que corresponde a la mayor de las dos intensidades.
+- **RF-14.9**: El sistema debe permitir al usuario ajustar los dos umbrales de RF-14.8, con valores enteros de 1 a 127 donde el umbral de fantasma sea menor que el de acento; si no cumplen esa condición, no se guardan. Los umbrales se guardan en la cuenta, un par por cuenta, igual que el mapeo MIDI (RF-12), con el control de acceso de RNF-14.
 - **RF-14.3** @CRITICO: El sistema debe cuantizar los golpes de la toma a la grilla elegida: semicorchea, corchea de tresillo, corchea o negra.
 - **RF-14.4**: El sistema debe reemplazar lo que había escrito en los compases de la toma por los golpes grabados.
 - **RF-14.5**: Si la toma tiene más compases que la partitura, el sistema debe añadir los compases que falten, hasta el tope de 128 (RF-08.4).
@@ -102,6 +108,10 @@ Grabar una toma es escribir en la partitura con las baquetas en lugar del mouse 
 - **RF-18.2**: El sistema debe permitir elegir el compás (numerador y denominador).
 - **RF-18.3**: Si se escribe un tempo fuera de 30–260 BPM, el sistema debe fijar el tempo en el límite más cercano (30 o 260).
 - **RF-18.4**: El sistema debe ofrecer como numerador los valores de 1 a 16 y como denominador 2, 4, 8 o 16.
+- **RF-18.5**: Si se cambia el compás de una partitura con notas, el sistema debe conservar todas las notas: las que no caben en el nuevo compás pasan al compás siguiente, que se añade si hace falta. Una nota cuya duración excede lo que queda del compás pasa entera al inicio del compás siguiente, conservando su duración, y un grupo de tresillo se mueve completo.
+- **RF-18.6**: Si el cambio de compás obliga a superar los 128 compases, el sistema debe descartar las notas que no entran en el tope (RF-08.4) y avisar al usuario de que se descartaron notas. El cambio se puede deshacer (RF-09).
+- **RF-18.7**: Si se cambia el tempo durante una reproducción, el cambio debe valer desde el siguiente compás, tanto para las notas como para el metrónomo.
+- **RF-18.8**: Mientras se graba una toma o se practica, el sistema debe mantener deshabilitado el cambio de tempo, y mientras se reproduce, se graba o se practica, el cambio de tipo de compás; se pueden cambiar al detener. El volumen del metrónomo y el de la partitura en práctica (RF-31) siguen ajustables.
 - **RF-19.1** @CRITICO: El sistema debe reproducir la partitura desde el compás 1 al pulsar Play.
 - **RF-19.2**: El sistema debe detener la reproducción al pulsar Detener.
 - **RF-19.3**: El sistema debe permitir reproducir en bucle.
@@ -117,17 +127,24 @@ Grabar una toma es escribir en la partitura con las baquetas en lugar del mouse 
 - **RF-21.2**: El sistema debe usar en el kit predefinido un sonido distinto para cada pieza del kit.
 - **RF-21.3**: El sistema no debe habilitar Play, la grabación ni el Modo Práctica hasta que el kit predefinido esté descargado y decodificado en memoria.
 - **RF-21.4**: Mientras el kit se carga, el sistema debe mostrar que el kit está cargando.
+- **RF-21.5**: Si el kit no se puede descargar o decodificar, el sistema debe mostrar un aviso de error con un botón Reintentar y mantener deshabilitados Play, la grabación y el Modo Práctica hasta que el kit quede decodificado en memoria.
 
 ### Guardado y biblioteca
 
 - **RF-22.1**: El sistema debe autoguardar en el servidor, en la cuenta del usuario, la partitura en curso mientras se trabaja, sin que el usuario tenga que guardar a mano.
 - **RF-22.2**: El sistema debe recuperar la partitura en curso tal como estaba al volver a abrir la aplicación.
+- **RF-22.3**: El sistema debe ofrecer una acción **Nueva partitura** que deje el editor con una partitura vacía de 1 compás.
+- **RF-22.4**: Si la partitura en curso tiene cambios que no están guardados en la biblioteca, el sistema debe pedir confirmación antes de vaciarla con Nueva partitura. Hay cambios sin guardar cuando la partitura en curso difiere de su última versión guardada en la biblioteca; si nunca se guardó, cuando tiene al menos una nota.
+- **RF-22.5**: Si un autoguardado falla teniendo conexión, el sistema debe reintentarlo cada 5 s y, mientras no logre guardar, mostrar el aviso visible "No se están guardando los cambios", que debe desaparecer cuando el guardado se complete.
 - **RF-23.1**: El sistema debe permitir guardar la partitura en la **biblioteca del usuario** dándole un nombre.
 - **RF-23.2**: El sistema debe permitir volver a guardar sobre una partitura que ya está en la biblioteca.
 - **RF-23.3**: El sistema no debe guardar una partitura con el nombre vacío.
 - **RF-23.4**: El sistema no debe guardar una partitura con el nombre de otra partitura de la biblioteca del usuario, sin distinguir mayúsculas ni espacios en los extremos.
+- **RF-23.5**: El sistema no debe guardar una partitura con un nombre de más de 300 caracteres, contados tal como los escribió el usuario, incluidos los espacios de los extremos. La cantidad de partituras por usuario no tiene límite.
 - **RF-24**: El sistema debe mostrar la biblioteca como un listado de las partituras guardadas, cada una con su nombre, su tempo, su cantidad de compases y la fecha de su última modificación.
 - **RF-25**: El sistema debe permitir abrir en el editor cualquier partitura de la biblioteca.
+- **RF-25.1**: Si la partitura en curso tiene cambios que no están guardados en la biblioteca (misma regla que RF-22.4), el sistema debe pedir confirmación antes de reemplazarla al abrir otra partitura de la biblioteca.
+- **RF-25.2**: Si el servidor falla al guardar, abrir o eliminar una partitura de la biblioteca teniendo conexión, el sistema debe mostrar el mensaje "No se pudo guardar", "No se pudo abrir" o "No se pudo eliminar", según corresponda, con la opción de reintentar, sin cambiar la biblioteca ni la partitura en curso.
 - **RF-26.1**: El sistema debe pedir confirmación antes de eliminar una partitura de la biblioteca.
 - **RF-26.2**: El sistema debe eliminar la partitura de forma definitiva al confirmar.
 
@@ -135,16 +152,21 @@ Grabar una toma es escribir en la partitura con las baquetas en lugar del mouse 
 
 - **RF-27.1**: El sistema debe ofrecer un **Modo Práctica** que haga avanzar la partitura para que el baterista toque sobre ella con su batería MIDI.
 - **RF-27.2**: El sistema debe arrancar el Modo Práctica con el sonido de la partitura en silencio, para que lo único que se escuche sea lo que toca el baterista.
+- **RF-27.3**: El sistema debe permitir arrancar el Modo Práctica con una **cuenta previa** opcional de un compás marcada por el metrónomo, aunque esté desactivado, sin evaluar los golpes que lleguen durante la cuenta. Con el bucle activado, la cuenta previa suena solo al arrancar, no en cada vuelta.
 - **RF-28**: En Modo Práctica, el sistema debe destacar visualmente la próxima nota esperada mientras avanza la reproducción.
 - **RF-29.1** @CRITICO: El sistema debe comparar cada golpe capturado con la nota esperada más cercana en el tiempo, sin importar la pieza; si hay varias notas a igual distancia, con la de la misma pieza que el golpe. El desvío es la diferencia entre el instante del golpe y el de esa nota: positivo si el golpe llega tarde, negativo si llega adelantado.
 - **RF-29.2** @CRITICO: El sistema debe colorear de **verde** el golpe cuyo desvío, en valor absoluto, sea de 100 ms o menos y que sea de la pieza esperada.
 - **RF-29.3** @CRITICO: El sistema debe colorear de **amarillo** el golpe cuyo desvío, en valor absoluto, sea mayor que 100 ms y de 250 ms o menos y que sea de la pieza esperada.
 - **RF-29.4** @CRITICO: El sistema debe colorear de **rojo** el golpe cuyo desvío, en valor absoluto, sea mayor que 250 ms, incluido el que no tiene ninguna nota esperada a menos de 250 ms, y el golpe de una pieza distinta de la esperada.
 - **RF-29.5**: El sistema debe marcar como **omitida**, con un indicador distinto de verde, amarillo y rojo, la nota esperada para la que ningún golpe tuvo un desvío de 250 ms o menos, cuando pasaron 250 ms desde su instante.
+- **RF-29.6**: El sistema debe evaluar cada golpe por separado, aunque otro golpe ya se haya comparado con la misma nota esperada: si dos golpes caen cerca de la misma nota, ambos reciben su propio color y desvío.
 - **RF-30.1**: En Modo Práctica, el sistema debe mostrar en vivo la pieza esperada.
 - **RF-30.2**: En Modo Práctica, el sistema debe mostrar en vivo el resultado de cada golpe.
 - **RF-30.3**: En Modo Práctica, el sistema debe mostrar en vivo el desvío de cada golpe en milisegundos, con signo (positivo tarde, negativo adelantado).
 - **RF-30.4**: En Modo Práctica, el sistema debe permitir usar el bucle.
+- **RF-30.5**: Al terminar el Modo Práctica, el sistema debe dejar visibles en la partitura el color y el desvío de cada golpe y las notas omitidas, hasta que se inicie otra práctica o se edite la partitura.
+- **RF-30.6**: El sistema debe ofrecer un botón **Limpiar práctica** que borre el feedback de la última práctica.
+- **RF-30.7**: Con el bucle activado, el sistema debe borrar el feedback de la vuelta anterior al empezar cada vuelta, de modo que solo se vea el de la vuelta actual y, al terminar la práctica, el de la última vuelta.
 - **RF-31**: En Modo Práctica, el sistema debe permitir regular el volumen de la partitura mientras se practica, desde el silencio total hasta su nivel normal, sin detener la práctica y de forma **independiente del volumen del metrónomo**.
 
 ### Identificación de usuario
@@ -156,17 +178,26 @@ Cada baterista se identifica con su cuenta de Google. La primera vez que una cue
 - **RF-34**: El sistema debe hacer login con el perfil existente cuando un usuario ya registrado vuelve a identificarse con la misma cuenta de Google, desde cualquier computadora, sin crear un perfil nuevo.
 - **RF-35**: El sistema debe mantener la sesión iniciada entre cierres de la aplicación, hasta que el usuario cierre sesión o la sesión se revoque en el servidor.
 - **RF-35.1**: Si el sistema operativo no ofrece un almacén seguro para cifrar la sesión (RNF-13), el sistema no debe permitir iniciar sesión y debe mostrar el aviso "Almacén de claves no disponible".
+- **RF-35.2**: Cuando la sesión deja de ser válida y se muestra la pantalla de identificación, el sistema debe mostrar el mensaje "Tu sesión venció, identifícate de nuevo" si la sesión venció o se revocó, y "No se pudo verificar tu sesión, identifícate de nuevo" si la credencial fue alterada o ya se usó. La sesión desplazada por otra computadora conserva su aviso propio (RF-36.1).
 - **RF-36**: El sistema debe permitir cerrar la sesión.
+- **RF-36.1**: Cada cuenta debe tener una sola sesión activa. Al iniciar sesión con la cuenta en otra computadora, el sistema debe cerrar la sesión anterior: el servidor debe rechazar el siguiente pedido de esa sesión y esa computadora debe mostrar la pantalla de identificación con el aviso "Tu sesión se cerró porque iniciaste en otra computadora". Si esa computadora tenía un borrador sin subir, se aplica RF-39.8.
+- **RF-36.2**: Al cerrar sesión, el sistema debe mostrar solo la pantalla de identificación y descartar de la memoria la partitura abierta, el historial de Deshacer, la biblioteca, el mapeo MIDI y los umbrales del usuario, además de borrar el borrador local (RF-39.6). El kit predefinido puede permanecer cargado, porque es igual para todos.
 - **RF-37**: El sistema debe asociar cada partitura guardada en la biblioteca al usuario que la guardó.
 - **RF-38**: El sistema debe mostrar en la biblioteca solo las partituras del usuario con sesión iniciada.
 
 ### Conexión con el servidor
 
-Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisitos cubren qué pasa cuando la conexión falta al abrir la aplicación o se corta durante el uso.
+Drum Sync necesita conexión para identificarse, descargar el kit y usar la biblioteca (ver Fuera de Alcance). Con una sesión guardada, permite además escribir sin conexión en un **borrador local cifrado** de la partitura en curso, que se sube al volver la conexión. Estos requisitos cubren qué pasa cuando la conexión falta al abrir la aplicación o se corta durante el uso.
 
-- **RF-39.1**: Si al abrir la aplicación no puede comunicarse con el servidor, el sistema debe mostrar un aviso de "Sin conexión".
+- **RF-39.1**: Si al abrir la aplicación no puede comunicarse con el servidor y no hay una sesión guardada, el sistema debe mostrar un aviso de "Sin conexión".
 - **RF-39.2**: En ese caso, el sistema no debe dar acceso al editor, a la biblioteca ni al Modo Práctica.
-- **RF-40**: Si la conexión se pierde durante el uso, el sistema debe mostrar un aviso visible.
+- **RF-39.3**: Si al abrir la aplicación no puede comunicarse con el servidor pero hay una sesión guardada, el sistema debe abrir el editor en modo sin conexión, con el borrador local anterior si existe o con una partitura vacía de 1 compás, y con el aviso fijo de RF-40.
+- **RF-39.4**: En modo sin conexión, el sistema debe permitir escribir y editar la partitura con el mouse y debe deshabilitar, con el motivo "Sin conexión", el guardado en la biblioteca, abrir y eliminar partituras de la biblioteca y listarla.
+- **RF-39.5**: El kit predefinido no se guarda en la computadora. Si no está decodificado en memoria, el sistema debe mantener deshabilitados Play, la grabación y el Modo Práctica con el motivo "Sin conexión: el kit no está cargado".
+- **RF-39.6**: Mientras no hay conexión, ya sea porque faltaba al abrir la aplicación o porque se cortó durante el uso, el sistema debe guardar cada cambio de la partitura en un borrador local cifrado como máximo 5 s después del último cambio. El borrador pertenece al usuario que lo escribió, nunca se muestra a otro y se borra al subirse, al cerrar sesión o cuando el usuario elige descartarlo.
+- **RF-39.7**: Al volver la conexión, si la partitura en curso del servidor es la misma de la que partió el borrador, el sistema debe subir el borrador como partitura en curso sin preguntar. Si difiere, debe preguntar al usuario cuál conservar, el borrador local o la versión del servidor; la elegida pasa a ser la partitura en curso y la otra se descarta.
+- **RF-39.8**: Si al volver la conexión la sesión se revocó o venció y no se puede renovar, el sistema debe mostrar la pantalla de identificación y conservar el borrador cifrado para ese usuario hasta que vuelva a identificarse; si otro usuario inicia sesión, el borrador se descarta.
+- **RF-40**: Si la conexión se pierde durante el uso, el sistema debe mostrar un aviso visible: fijo en un lugar visible de la pantalla, sin tapar el editor ni el Modo Práctica, que se mantiene mientras no haya conexión y desaparece al volver.
 
 ## Requerimientos No Funcionales
 
@@ -179,14 +210,16 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 - **RNF-07**: El editor, la reproducción y el guardado no deben depender de Web MIDI: deben funcionar igual con y sin MIDI.
 - **RNF-08**: La partitura en curso debe recuperarse del servidor en menos de 3 s p95 después del login, con una conexión de 10 Mbps y una partitura de referencia de 128 compases.
 - **RNF-09**: Cada partitura guardada debe llevar el número de versión de su formato; el formato de este PRD es la versión 1. Toda versión nueva del formato debe abrir sin intervención del usuario las partituras guardadas con cualquier versión publicada anterior, con el 100 % de sus notas en la misma posición musical.
+- **RNF-09.1**: Todo cambio de formato de partitura debe incluir, antes de publicarse, una partitura de prueba de cada versión anterior publicada y su escenario de migración (AC-92). Hoy la versión 1 es la única y no hay nada que migrar.
 - **RNF-10**: La identificación debe hacerse con Supabase Auth usando Google como proveedor, con el flujo OAuth 2.0 *authorization code* con PKCE. El login debe abrirse en el navegador del sistema, no en una vista web embebida (Google la bloquea), y volver a la app por un protocolo propio (`drumsync://`).
 - **RNF-11**: Cada request de la app al servidor debe llevar el access token de la sesión, un JWT firmado por el backend. El servidor debe verificar su firma y su vencimiento (`exp`) en cada request, y rechazar con 401 cualquier token alterado o vencido. El ID token de Google lo valida el backend al hacer login (`iss`, `aud`, firma y `exp`), nunca la app.
 - **RNF-12**: El access token debe usar la expiración estándar de Supabase Auth, 1 hora (3600 s), y renovarse automáticamente antes de vencer con un refresh token de un solo uso (rotación). La sesión no tiene un límite propio: dura hasta que el usuario cierra sesión o se revoca en el servidor.
-- **RNF-13**: La sesión (access token y refresh token) es el único dato del usuario que se guarda en la computadora. Debe guardarse cifrada con el almacén seguro del sistema operativo (`safeStorage` de Electron), nunca en texto plano ni en el almacenamiento local del navegador.
+- **RNF-13**: La sesión (access token y refresh token) y el borrador sin conexión de la partitura en curso (RF-39.6) son los únicos datos del usuario que se guardan en la computadora. Deben guardarse cifrados con el almacén seguro del sistema operativo (`safeStorage` de Electron), nunca en texto plano ni en el almacenamiento local del navegador.
 - **RNF-14**: El control de acceso debe aplicarse en el servidor, no en la app. Toda tabla con datos de usuario debe tener Row Level Security activado, con políticas que limiten lectura y escritura a las filas cuyo dueño es el usuario del token. La app solo lleva la clave pública (*anon key*); la clave de servicio (*service_role*) nunca se distribuye con la app.
 - **RNF-15**: El kit predefinido debe pesar en total 3 MB o menos, con samples cuya licencia permita distribuirlos (CC0 o comprados). Tras el login, el kit predefinido debe estar descargado y decodificado en memoria en 5 s o menos p95, con una conexión de 10 Mbps. La reproducción nunca lee sonidos de la red.
 - **RNF-16**: El autoguardado debe subir la partitura en curso al servidor como máximo 5 s después del último cambio. Si la aplicación se cierra de golpe con conexión, se pierden como máximo esos 5 s de trabajo.
 - **RNF-17**: La aplicación de escritorio debe ejecutarse en Windows, macOS y Linux.
+- **RNF-18**: En el entorno de pruebas, la aplicación debe permitir inyectar golpes MIDI simulados con marca de tiempo conocida y controlar el reloj de audio, para que los escenarios de grabación, Modo Práctica y tiempos se prueben sin batería ni audio real. Esa capacidad no debe estar disponible para el usuario en producción.
 
 ## Criterios de Aceptación
 
@@ -244,6 +277,8 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 - **AC-16 (RF-09)**: **Dada** una toma que terminó y dejó golpes escritos, **cuando** se pulsa Deshacer, **entonces** vuelve la partitura anterior a la toma.
 - **AC-17 (RF-09)**: **Dada** una nota recién escrita, **cuando** se pulsa Deshacer, **entonces** la partitura vuelve a como estaba antes de escribirla.
 
+- **AC-117 (RF-09.1)**: **Dada** una partitura a la que se le hicieron 101 cambios, **cuando** se pulsa Deshacer 101 veces, **entonces** solo se deshacen los últimos 100 y la partitura queda como estaba después del primer cambio. **Cuando** se cierra y se vuelve a abrir la aplicación, **entonces** Deshacer no tiene ningún cambio para deshacer.
+
 ### Conexión con la batería MIDI
 
 - **AC-18 (RF-10.1, RF-10.2)**: **Dada** una batería "Midiplus Pro 9" conectada por USB, **cuando** se pulsa Conectar batería, **entonces** aparece en el listado de entradas.
@@ -256,12 +291,17 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 
 ### Escribir tocando
 
+> **Nota para los AC de grabación:** salvo que se indique otra, los golpes simulados de estos AC tienen intensidad 64, que corresponde a la articulación normal con los umbrales por defecto (RF-14.8).
+
 - **AC-25 (RF-10.5)**: **Dada** una entrada MIDI abierta por otra aplicación, **cuando** se la elige en el listado, **entonces** se muestra el texto "No se pudo abrir la entrada MIDI" y la grabación de tomas y el Modo Práctica siguen deshabilitados.
-- **AC-26 (RF-14.1, RF-14.2, RF-14.3, RF-14.6, RNF-06)**: **Dada** una toma de 1 compás a 120 BPM con la grilla en semicorchea (paso de 125 ms), **cuando** llegan un golpe simulado de bombo a 0 ms y uno de caja a 510 ms del inicio, **entonces** el bombo queda escrito en el tiempo 1 del compás 1 y la caja en el tiempo 2 (paso de 500 ms), como notas normales que después se pueden editar con el mouse.
+- **AC-115 (RF-10.6)**: **Dada** una toma de 4 compases en curso con golpes ya escritos, **cuando** se desconecta la batería, **entonces** se muestra "Batería desconectada", la toma termina y los golpes ya escritos siguen en la partitura. **Dado** el Modo Práctica en curso con golpes ya evaluados, **cuando** se desconecta la batería, **entonces** se muestra el mismo aviso, la práctica se detiene y el feedback sigue visible.
+- **AC-26 (RF-14.1, RF-14.2, RF-14.3, RF-14.6, RNF-06)**: **Dada** una toma de 1 compás a 120 BPM con la grilla en semicorchea (paso de 125 ms), **cuando** llegan un golpe simulado de bombo a 0 ms y uno de caja a 510 ms del inicio, ambos de intensidad 64, **entonces** el bombo queda escrito en el tiempo 1 del compás 1 y la caja en el tiempo 2 (paso de 500 ms), como notas normales que después se pueden editar con el mouse.
 - **AC-27 (RF-17.3)**: **Dada** la toma del AC-26, **cuando** llegan los mensajes de soltar esos pads y un golpe de intensidad cero, **entonces** no se escribe nada más.
 - **AC-28 (RF-14.4)**: **Dado** un compás con bombo en el tiempo 1, **cuando** se graba una toma con caja en el tiempo 3, **entonces** el compás queda solo con la caja en el tiempo 3.
 - **AC-29 (RF-14.5)**: **Dada** una partitura de 2 compases, **cuando** se graba una toma de 4 compases, **entonces** la partitura queda con 4 compases.
 - **AC-30 (RF-14.1)**: **Dado** el selector de cantidad de compases de la toma, **cuando** se despliega, **entonces** ofrece como máximo 128 compases.
+- **AC-132 (RF-14.8)**: **Dada** una toma con los umbrales por defecto (fantasma 30, acento 100), **cuando** llegan golpes de caja de intensidad 30, 31, 99 y 100, **entonces** el de 30 se escribe como nota fantasma, el de 31 y el de 99 como notas normales y el de 100 como acento; y ninguna se escribe como flam. **Cuando** dos golpes de caja de intensidad 20 y 110 caen en el mismo paso, **entonces** se fusionan en una sola nota con acento.
+- **AC-133 (RF-14.9, RF-12)**: **Dado** un usuario que ajusta el umbral de fantasma a 20 y el de acento a 120, **cuando** hace login con la misma cuenta en otra computadora, **entonces** los umbrales siguen en 20 y 120. **Cuando** intenta guardar fantasma 100 y acento 90, o un valor fuera de 1 a 127, **entonces** no se guarda y los umbrales no cambian.
 - **AC-31 (RF-14.7)**: **Dada** una toma de 1 compás en 4/4 a 120 BPM con la grilla en negra, **cuando** llegan un golpe de bombo en el tiempo 1 y uno de caja en el tiempo 3, y el pad del bombo se suelta 100 ms después de golpearlo, **entonces** el bombo se escribe como una blanca y la caja, por ser el último golpe, como una blanca hasta el final del compás.
 - **AC-32 (RF-15.1)**: **Dada** una toma de 1 compás con arranque al primer golpe, **cuando** pasan 3 s sin golpes, **entonces** la toma no empieza y no se escribe nada. **Cuando** se golpea la caja, **entonces** ese golpe queda escrito en el tiempo 1 del compás.
 - **AC-33 (RF-15.2)**: **Dada** una toma de 1 compás con cuenta previa, **cuando** se golpea la caja durante la cuenta, **entonces** ese golpe no se escribe.
@@ -293,12 +333,23 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 
 ### Guardado y biblioteca
 
+- **AC-134 (RF-18.7, RNF-01)**: **Dada** una partitura de 4 compases en 4/4 a 100 BPM en reproducción con metrónomo activado, **cuando** se cambia el tempo a 140 BPM durante el compás 2, **entonces** el compás 2 termina a 100 BPM, desde el compás 3 las notas y los clicks se programan a 140 BPM y ninguno se aparta 1 ms o más de su instante teórico.
+- **AC-135 (RF-18.8)**: **Dada** una partitura en reproducción, **cuando** se mira el selector de tipo de compás, **entonces** está deshabilitado; **y dada** una toma en curso o el Modo Práctica en curso, **entonces** están deshabilitados el tempo y el tipo de compás, y siguen ajustables el volumen del metrónomo y el de la partitura. **Cuando** se pulsa Detener, **entonces** se habilitan de nuevo.
+- **AC-108 (RF-18.5)**: **Dada** una partitura de 1 compás en 4/4 con notas en los tiempos 1 y 4, **cuando** se cambia el compás a 3/4, **entonces** la partitura tiene 2 compases, el compás 1 conserva la nota del tiempo 1 y la nota del tiempo 4 pasa al compás 2, sin perder ninguna nota. **Dada** una partitura de 1 compás en 4/4 con una blanca de caja en el tiempo 3, **cuando** se cambia el compás a 3/4, **entonces** la blanca pasa entera al tiempo 1 del compás 2 con su duración de blanca. **Dado** un grupo de tres corcheas de tresillo en el tiempo 3 de 4/4, **cuando** el cambio a 3/4 las deja sin espacio, **entonces** las tres pasan juntas al compás siguiente.
+- **AC-109 (RF-08.5, RF-18.6, RF-09)**: **Dada** una partitura de 128 compases en 4/4 con notas en todos, **cuando** se cambia el compás a 3/4, **entonces** se descartan las notas que no entran en los 128 compases, se muestra un aviso de que se descartaron notas y, al pulsar Deshacer, la partitura vuelve a 4/4 con todas sus notas.
+- **AC-114 (RF-21.5)**: **Dado** un usuario que acaba de hacer login y cuyo kit falla al descargarse, **cuando** termina el intento, **entonces** se muestra un aviso de error con el botón Reintentar y Play, la grabación y el Modo Práctica siguen deshabilitados. **Cuando** se pulsa Reintentar y el kit queda decodificado en memoria, **entonces** el aviso desaparece y esas funciones se habilitan.
+- **AC-116 (RF-22.5)**: **Dado** un usuario con conexión cuyo servidor rechaza los autoguardados, **cuando** escribe una nota, **entonces** el sistema reintenta el guardado cada 5 s y muestra "No se están guardando los cambios". **Cuando** el servidor vuelve a aceptar el guardado, **entonces** la nota queda guardada y el aviso desaparece.
 - **AC-56 (RF-22.1, RF-22.2)**: **Dada** una partitura con tempo y notas que nunca se guardó en la biblioteca, **cuando** se cierra la aplicación y se vuelve a abrir, **entonces** aparece la misma partitura con su tempo y sus notas.
 - **AC-57 (RF-23.1, RF-24)**: **Dada** una partitura de 2 compases a 120 BPM, **cuando** se guarda en la biblioteca con el nombre "Shuffle lento", **entonces** aparece en el listado con ese nombre, 120 BPM, 2 compases y la fecha de hoy.
 - **AC-58 (RF-25)**: **Dada** "Shuffle lento" en la biblioteca, **cuando** se abre, **entonces** el editor la carga con el mismo tempo, los mismos compases y las mismas notas.
 - **AC-59 (RF-23.2)**: **Dada** "Shuffle lento" abierta y modificada, **cuando** se vuelve a guardar, **entonces** el listado muestra la fecha actualizada y sigue habiendo una sola entrada con ese nombre.
 - **AC-60 (RF-23.3)**: **Dada** una partitura, **cuando** se intenta guardar con el nombre vacío, **entonces** no se guarda y la biblioteca no cambia.
 - **AC-61 (RF-23.4)**: **Dada** "Shuffle lento" en la biblioteca y otra partitura distinta en el editor, **cuando** se intenta guardar la segunda con el nombre "Shuffle lento", **entonces** no se guarda y la entrada existente no cambia. **Cuando** se intenta con el nombre "  shuffle LENTO ", **entonces** tampoco se guarda.
+- **AC-110 (RF-22.3, RF-22.4)**: **Dada** una partitura en curso con cambios sin guardar en la biblioteca, **cuando** se pulsa Nueva partitura, **entonces** se pide confirmación; al cancelar la partitura no cambia y al confirmar el editor queda con una partitura vacía de 1 compás. **Dada** una partitura sin cambios sin guardar, **cuando** se pulsa Nueva partitura, **entonces** se vacía sin pedir confirmación. Lo mismo vale para una partitura vacía que nunca se guardó. **Dada** una partitura nunca guardada con al menos una nota, o una abierta de la biblioteca y modificada, **cuando** se pulsa Nueva partitura, **entonces** se pide confirmación.
+- **AC-111 (RF-23.5)**: **Dada** una partitura, **cuando** se intenta guardar con un nombre de 301 caracteres, **entonces** no se guarda y la biblioteca no cambia; con un nombre de 300 caracteres sí se guarda. Un nombre de 300 caracteres seguido de un espacio también se rechaza, porque el espacio cuenta.
+- **AC-119 (RF-23.4, RF-38)**: **Dados** dos usuarios registrados y A con "Shuffle lento" en su biblioteca, **cuando** B guarda una partitura con el nombre "Shuffle lento" en la suya, **entonces** se guarda sin error y la partitura de A no cambia.
+- **AC-123 (RF-25.1)**: **Dada** una partitura en curso con cambios sin guardar en la biblioteca, **cuando** se abre otra partitura de la biblioteca, **entonces** se pide confirmación; al cancelar la partitura en curso no cambia y al confirmar se abre la elegida. **Dada** una partitura en curso sin cambios sin guardar, **cuando** se abre otra de la biblioteca, **entonces** se abre sin pedir confirmación.
+- **AC-130 (RF-25.2)**: **Dado** un usuario con conexión cuyo servidor falla, **cuando** guarda una partitura, abre una de la biblioteca o elimina una, **entonces** se muestra respectivamente "No se pudo guardar", "No se pudo abrir" o "No se pudo eliminar" con la opción de reintentar, y la biblioteca y la partitura en curso no cambian. **Cuando** el servidor vuelve a responder y se reintenta, **entonces** la acción se completa.
 - **AC-62 (RF-26.1)**: **Dada** una partitura en la biblioteca, **cuando** se pide eliminarla, **entonces** se pide confirmación antes de borrarla.
 - **AC-63 (RF-26.1)**: **Dada** la confirmación de eliminar en pantalla, **cuando** se cancela, **entonces** la partitura sigue en el listado.
 - **AC-64 (RF-26.2)**: **Dada** la confirmación de eliminar en pantalla, **cuando** se confirma, **entonces** la partitura desaparece del listado.
@@ -328,6 +379,15 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 - **AC-72 (RF-31)**: **Dada** una partitura de 2 compases en Modo Práctica, **cuando** se repiten los mismos golpes simulados con el volumen en 0 % y en 50 %, **entonces** el color y el desvío de cada golpe son iguales en los dos casos.
 - **AC-73 (RF-31)**: **Dada** una práctica con el volumen de la partitura en 50 %, **cuando** se vuelve a 0 %, **entonces** las notas de la partitura dejan de programarse con ganancia audible y la práctica sigue.
 
+- **AC-112 (RF-30.5)**: **Dada** una práctica sin bucle que terminó con golpes verdes, amarillos, rojos y una nota omitida, **cuando** se mira la partitura, **entonces** el color y el desvío de cada golpe y la nota omitida siguen visibles. **Cuando** se edita la partitura o se inicia otra práctica, **entonces** el feedback anterior desaparece.
+- **AC-113 (RF-30.6)**: **Dada** una práctica terminada con feedback visible, **cuando** se pulsa Limpiar práctica, **entonces** desaparecen los colores, los desvíos y las notas omitidas, y la partitura no cambia.
+
+- **AC-118 (RF-27.3)**: **Dada** una partitura de 1 compás en 4/4 a 120 BPM en Modo Práctica con cuenta previa y el metrónomo desactivado, **cuando** arranca la práctica, **entonces** se programan 4 clicks de cuenta, el primero acentuado, y un golpe durante la cuenta no recibe color ni desvío. **Dado** el bucle activado, **cuando** el compás se repite, **entonces** no se vuelve a programar la cuenta previa.
+
+- **AC-120 (RF-30.7)**: **Dada** una partitura de 1 compás en Modo Práctica con bucle y golpes con feedback en la primera vuelta, **cuando** empieza la segunda vuelta, **entonces** desaparecen los colores, los desvíos y las notas omitidas de la primera y solo se ve el feedback de la segunda. **Cuando** se detiene la práctica, **entonces** queda visible el feedback de la última vuelta.
+
+- **AC-121 (RF-29.6)**: **Dada** la partitura del AC-66 (bombo en el tiempo 1 y caja en el tiempo 3, a 120 BPM), **cuando** se toca el bombo con 0 ms de desvío y otro golpe de bombo a 40 ms del tiempo 1, **entonces** el primer golpe se ve verde con +0 ms y el segundo también se ve verde con +40 ms, cada uno con su desvío mostrado.
+
 ### Identificación de usuario
 
 - **AC-74 (RF-32)**: **Dado** que no hay ninguna sesión iniciada, **cuando** se abre la aplicación, **entonces** solo se muestra la pantalla para identificarse con Google, y no se puede llegar al editor, a la biblioteca ni al Modo Práctica.
@@ -337,13 +397,23 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 - **AC-78 (RF-35, RNF-12)**: **Dado** un usuario con sesión iniciada cuya sesión se revoca en el servidor, **cuando** la aplicación intenta renovar el token, **entonces** la sesión se cierra y se muestra la pantalla de identificación.
 - **AC-79 (RF-35.1)**: **Dado** un sistema Linux sin almacén de claves disponible para `safeStorage`, **cuando** se abre la aplicación y se intenta identificarse con Google, **entonces** se muestra el aviso "Almacén de claves no disponible" y no se inicia sesión.
 - **AC-80 (RF-36)**: **Dado** un usuario con sesión iniciada, **cuando** cierra sesión y vuelve a abrir la aplicación, **entonces** se muestra la pantalla de identificación.
+- **AC-136 (RF-35.2)**: **Dado** un usuario con sesión vencida o revocada, **cuando** la aplicación no puede renovarla, **entonces** se muestra la pantalla de identificación con "Tu sesión venció, identifícate de nuevo". **Dado** un usuario cuya credencial fue alterada, o cuya credencial de renovación ya se usó, **cuando** la aplicación la usa en un pedido, **entonces** se muestra la pantalla de identificación con "No se pudo verificar tu sesión, identifícate de nuevo".
+- **AC-137 (RF-36.2)**: **Dado** un usuario A con una partitura abierta y cambios en el historial de Deshacer, **cuando** cierra sesión, **entonces** solo se ve la pantalla de identificación. **Cuando** B inicia sesión en la misma computadora, **entonces** no ve la partitura abierta de A, Deshacer no tiene cambios para deshacer y no aparecen la biblioteca, el mapeo MIDI ni los umbrales de A; y el kit no se vuelve a descargar.
+- **AC-131 (RF-36.1)**: **Dado** un usuario con sesión iniciada en la computadora 1, **cuando** inicia sesión con la misma cuenta en la computadora 2, **entonces** la computadora 2 entra al editor y el siguiente pedido de la computadora 1 al servidor es rechazado; la computadora 1 muestra la pantalla de identificación con el aviso "Tu sesión se cerró porque iniciaste en otra computadora" y la partitura en curso guardada por la computadora 2 no se modifica.
 - **AC-81 (RF-37)**: **Dado** un usuario A con sesión iniciada, **cuando** guarda la partitura "Shuffle lento" en la biblioteca, **entonces** la fila guardada en el servidor tiene como dueño el identificador de A.
 - **AC-82 (RF-37, RF-38) · Control de acceso desde la app**: **Dados** dos usuarios registrados y A con "Shuffle lento" en su biblioteca, **cuando** A cierra sesión y B hace login en la misma computadora, **entonces** "Shuffle lento" no aparece en el listado de B.
 
 ### Conexión con el servidor
 
-- **AC-83 (RF-39.1, RF-39.2)**: **Dada** una computadora sin conexión a Internet, **cuando** se abre la aplicación, **entonces** se muestra el aviso "Sin conexión" y no se puede llegar al editor.
+- **AC-83 (RF-39.1, RF-39.2)**: **Dada** una computadora sin conexión a Internet y sin sesión guardada, **cuando** se abre la aplicación, **entonces** se muestra el aviso "Sin conexión" y no se puede llegar al editor.
+- **AC-124 (RF-39.3, RF-39.4, RF-39.5)**: **Dado** un usuario con sesión guardada y sin conexión, **cuando** abre la aplicación, **entonces** el editor se abre con el aviso fijo de falta de conexión, se puede escribir con el mouse, guardar en la biblioteca, abrir y eliminar están deshabilitados con el motivo "Sin conexión", y Play, la grabación y el Modo Práctica están deshabilitados con "Sin conexión: el kit no está cargado".
+- **AC-125 (RF-39.6, RF-39.7)**: **Dado** un usuario sin conexión que escribe una nota y espera 6 s, **cuando** cierra la aplicación y la vuelve a abrir sin conexión, **entonces** la nota está en el borrador. **Cuando** vuelve la conexión y la partitura en curso del servidor es la de la que partió el borrador, **entonces** el borrador se sube sin preguntar y el borrador local se borra.
+- **AC-129 (RF-39.6, RF-39.7)**: **Dado** un usuario con el editor abierto y la partitura en curso ya guardada en el servidor, **cuando** se corta la conexión, escribe una nota y espera 6 s, **entonces** la nota queda en el borrador local. **Cuando** vuelve la conexión y la partitura del servidor no cambió, **entonces** la nota se sube sin preguntar, el borrador se borra y el aviso de falta de conexión desaparece.
+- **AC-126 (RF-39.7)**: **Dado** un borrador local de una partitura que se editó desde otra computadora mientras tanto, **cuando** vuelve la conexión, **entonces** se pregunta al usuario cuál conservar; la elegida queda como partitura en curso y la otra se descarta.
+- **AC-127 (RF-39.6, RF-39.8, RNF-13)**: **Dado** un borrador local sin subir, **cuando** el usuario cierra sesión, **entonces** el borrador se borra. **Dado** un borrador de A sin subir, **cuando** B inicia sesión en la misma computadora, **entonces** B no ve el borrador de A y este se descarta. **Cuando** se inspeccionan la carpeta de datos y el almacenamiento del navegador, **entonces** el borrador no aparece en texto plano.
 - **AC-84 (RF-40, RNF-01)**: **Dado** un usuario practicando con la partitura abierta, **cuando** se corta la conexión, **entonces** aparece un aviso de que no hay conexión, la reproducción no se detiene, ningún evento de sonido se programa tarde (RNF-01) y el feedback sigue apareciendo.
+
+- **AC-122 (RF-40)**: **Dado** un usuario con el editor abierto, **cuando** se corta la conexión y pasan 60 s, **entonces** el aviso de falta de conexión sigue visible sin tapar el editor. **Cuando** vuelve la conexión, **entonces** el aviso desaparece.
 
 ### Requerimientos no funcionales
 
@@ -355,6 +425,7 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 - **AC-90 (RNF-07)**: **Dado** que Web MIDI no está disponible o el permiso MIDI se denegó, **cuando** el usuario escribe una partitura con el mouse, la guarda en la biblioteca y la reproduce, **entonces** las tres acciones se completan igual que con MIDI disponible.
 - **AC-91 (RNF-08)**: **Dado** un usuario cuya partitura en curso tiene 128 compases, con la conexión limitada a 10 Mbps, **cuando** hace login 100 veces, **entonces** el p95 del tiempo entre el login y ver la partitura en curso es menor que 3 s.
 - **AC-92 (RNF-09)**: **Dado** un conjunto de partituras de prueba, una por cada versión publicada del formato (hoy, solo la versión 1) y con notas en todas las figuras y piezas del kit, **cuando** cada una se abre con la versión actual de la aplicación, **entonces** se abre sin que el usuario convierta nada y con el 100 % de sus notas en la misma posición musical.
+- **AC-138 (RNF-09.1)**: **Dado** un cambio de formato de partitura que define la versión N+1, **cuando** se prepara su publicación, **entonces** existe una partitura de prueba de cada versión anterior publicada, con su escenario de migración, y el conjunto de AC-92 se amplía con ellas; sin eso, el cambio no se publica.
 - **AC-93 (RNF-09)**: **Dada** una partitura guardada con la versión actual de la aplicación, **cuando** se lee la fila guardada en el servidor, **entonces** lleva el número de versión de formato 1.
 - **AC-94 (RNF-10)**: **Dado** un usuario sin sesión iniciada, **cuando** pulsa identificarse con Google, **entonces** el login se abre en el navegador del sistema y no en una vista web embebida, y al terminar vuelve a la app por `drumsync://`.
 - **AC-95 (RNF-11)**: **Dado** un access token con la firma alterada, o vencido y sin refresh token válido, **cuando** la aplicación lo usa en un request, **entonces** el servidor responde 401 y la aplicación muestra la pantalla de identificación.
@@ -370,6 +441,7 @@ Drum Sync necesita conexión para usarse (ver Fuera de Alcance). Estos requisito
 - **AC-105 (RNF-15)**: **Dado** el kit decodificado en memoria, **cuando** se corta la conexión y se reproduce una partitura, **entonces** la reproducción no hace ningún request de red y suena con todos los samples.
 - **AC-106 (RNF-16)**: **Dado** un usuario con conexión, **cuando** escribe una nota, espera 6 s y la aplicación se cierra de golpe, **entonces** al volver a abrirla la nota está en la partitura en curso.
 - **AC-107 (RNF-17)**: **Dado** el instalador de la aplicación en Windows, en macOS y en Linux, **cuando** se instala y se abre en cada uno, **entonces** en los tres sistemas se llega a la pantalla de identificación.
+- **AC-128 (RNF-18)**: **Dado** el entorno de pruebas, **cuando** se inyecta un golpe MIDI simulado con marca de tiempo conocida y se adelanta el reloj de audio, **entonces** el golpe se registra y se evalúa como uno real. **Dada** la versión de producción, **cuando** se intenta usar esa capacidad, **entonces** no está disponible.
 
 ## Fuera de Alcance
 
@@ -379,7 +451,7 @@ Queda **fuera de este PRD**:
 - Generación de grooves con IA.
 - Importación y exportación de archivos de partitura, sea `.compas.json`, MIDI, MusicXML o PDF.
 - Plataforma de profesores y alumnos, con sus roles, invitaciones y partituras compartidas entre usuarios.
-- **Uso sin conexión**, cualquier copia local de la biblioteca o del kit de sonidos, y conservar o subir después los cambios hechos mientras no hay red.
+- Uso sin conexión de la biblioteca, cualquier copia local de la biblioteca o del kit de sonidos, y colas de cambios. La única excepción es el **borrador local cifrado** de la partitura en curso, que se sube al volver la conexión (RF-39.3 a RF-39.8).
 - Edición simultánea de la misma partitura desde dos computadoras.
 - Identificación con proveedores que no sean Google o con usuario y contraseña propios.
 - Versión web de la app para usuarios finales.
@@ -387,11 +459,12 @@ Queda **fuera de este PRD**:
 - Vista compacta de varios compases por línea y salida imprimible.
 - Metrónomo por separado de la partitura.
 - Notación avanzada: ligaduras entre compases, redobles medidos y buzz rolls, cambios de compás dentro de un mismo tema y partituras de instrumentos que no sean batería.
-- En la grabación de tomas: grabar a un tempo distinto del de la partitura, deducir el tempo de cómo se tocó y convertir la intensidad de cada golpe en dinámica automática.
+- En la grabación de tomas: grabar a un tempo distinto del de la partitura, deducir el tempo de cómo se tocó y convertir la intensidad de cada golpe en dinámica automática. La intensidad solo decide la articulación normal, acento o fantasma de la nota grabada (RF-14.8).
 - Un mapeo MIDI distinto por cada batería: hay un único mapeo por cuenta.
 - Elegir el compás desde el que arranca una toma: siempre arranca en el compás 1.
-- Pedir confirmación al abrir una partitura de la biblioteca cuando hay trabajo sin guardar, o al quitar un compás que tiene notas.
+- Pedir confirmación al quitar un compás que tiene notas. (Nueva partitura y abrir una partitura de la biblioteca sí piden confirmación si hay cambios sin guardar: RF-22.4 y RF-25.1.)
 - Eliminar la cuenta del usuario y exportar o borrar todos sus datos.
+- Registro y auditoría de eventos de seguridad dentro de la aplicación (logins fallidos, credenciales rechazadas, accesos denegados). Se usan los registros del proveedor de identidad y del servidor (Supabase).
 - Requisitos de accesibilidad (lector de pantalla, contraste, navegación por teclado).
 - Cualquier idioma de la interfaz que no sea español.
 - Funciones que quedan para una versión posterior: mezclador por pieza (volumen, silencio y solo), dinámicas, secciones de canción, indicaciones de texto, edición en cuadrícula, tempo con TAP o con botones +/−, volumen general de reproducción, rehacer, puntillo, rimshot y cross-stick.
@@ -403,9 +476,9 @@ De esos recortes se siguen tres consecuencias que el resto del documento da por 
 
 ### Riesgos
 
-- **Todo depende del servidor.** Si Supabase no responde, nadie puede entrar a la app (RF-39). Mitigación: plan pago con backups diarios y datos en Postgres estándar, exportables con `pg_dump` si hace falta migrar de proveedor. El plan gratuito pausa el proyecto tras una semana sin actividad, así que solo sirve para desarrollo.
+- **Casi todo depende del servidor.** Si Supabase no responde, nadie puede iniciar sesión ni usar la biblioteca ni el kit; con sesión guardada solo se puede escribir en un borrador local (RF-39.3). Mitigación: plan pago con backups diarios y datos en Postgres estándar, exportables con `pg_dump` si hace falta migrar de proveedor. El plan gratuito pausa el proyecto tras una semana sin actividad, así que solo sirve para desarrollo.
 - **La clave pública va dentro de la app.** Cualquiera puede extraerla, así que la seguridad depende por completo de las políticas de RLS (RNF-14). Una tabla nueva sin RLS expone los datos de todos los usuarios. Mitigación: AC-99 a AC-102 prueban las políticas sin pasar por la app.
-- **Si se corta la red durante el uso, los cambios nuevos no se suben.** No hay cola de cambios ni advertencia al cerrar: lo que no llegó al servidor se pierde. Es consecuencia directa de no tener modo sin conexión. Mitigación: aviso visible apenas se pierde la conexión (RF-40), para que el usuario sepa que lo nuevo no se está subiendo; lo anterior al corte ya está en el servidor (RNF-16).
+- **Si se corta la red durante el uso, los cambios nuevos no llegan al servidor hasta que vuelve.** Se guardan en un borrador local cifrado (RF-39.6) y se suben al reconectar (RF-39.7). Riesgos: (1) el borrador es el primer dato del usuario en la computadora además de la sesión, así que queda cifrado y se borra al cerrar sesión; (2) si el usuario cierra sesión sin conexión pierde el borrador; (3) si editó la partitura desde otra computadora, hay un conflicto que el usuario resuelve (RF-39.7). Mitigación: aviso fijo apenas se pierde la conexión (RF-40); lo anterior al corte ya está en el servidor (RNF-16).
 - **Descargar el kit demora la entrada a la app** y cuenta contra los 2 minutos de O-4. Mitigación: kit predefinido de 3 MB o menos (RNF-15).
 - **Licencia de los samples.** El kit predefinido tiene que salir de samples libres (CC0) o comprados con licencia de redistribución. Sin eso no se puede publicar la app. Mitigación: registrar la licencia de cada sample antes de incluirlo en el kit, y verificarlo en AC-103.
 - **Permiso MIDI denegado o puerto tomado por otra app** → se muestra el motivo (RF-10.4, RF-10.5) y se puede elegir otra entrada del listado (RF-10.2). Sin MIDI se pierden la grabación y la práctica, pero no el editor (AC-24, AC-90).
@@ -414,7 +487,7 @@ De esos recortes se siguen tres consecuencias que el resto del documento da por 
 - **Latencia o jitter de Web Audio y Web MIDI** → reloj de Web Audio para la reproducción, `event.timeStamp` para los golpes, cuantización explícita y el desvío siempre medido contra el reloj de audio, nunca contra el reloj de la interfaz. La red nunca está en ese camino: los sonidos se reproducen desde memoria (RNF-15).
 - **El feedback de timing es la función crítica y no se puede probar sin hardware** → la suite de tests inyecta golpes MIDI simulados con marcas de tiempo conocidas, para validar la cuantización, el color y el desvío sin batería conectada.
 - **El cálculo automático de silencios puede producir notación rara con figuras mezcladas** → RNF-05 lo vuelve verificable: el compás siempre cierra exacto, y los casos límite —tresillos junto a semicorcheas, y lo que salga de una toma grabada— entran en la suite.
-- **Abrir una partitura de la biblioteca reemplaza la partitura en curso sin avisar.** El autoguardado conserva solo la última, así que el trabajo no guardado en la biblioteca se pierde. Es consecuencia de no pedir confirmación al abrir (Fuera de Alcance). Mitigación: lo ya guardado en la biblioteca no se pierde (RF-23); el usuario evita el problema guardando antes.
+- **Abrir una partitura de la biblioteca reemplaza la partitura en curso.** El autoguardado conserva solo la última, así que el trabajo no guardado en la biblioteca se pierde si el usuario confirma el reemplazo. Mitigación: se pide confirmación cuando hay cambios sin guardar (RF-25.1) y lo ya guardado en la biblioteca no se pierde (RF-23).
 - **La identificación suma un paso antes de capturar la primera idea** → cuenta contra los 2 minutos de O-4. Mitigación: la sesión persiste entre cierres (RF-35), así que el paso se hace solo la primera vez en cada computadora.
 - **En Linux, `safeStorage` depende de que el sistema tenga un almacén de claves.** Sin él, la sesión no se podría guardar cifrada (RNF-13). Mitigación: si no hay almacén seguro, la aplicación no permite iniciar sesión y muestra un aviso (RF-35.1).
 - **El núcleo no debe quedar atado al backend** → el editor, la reproducción, la grabación y el Modo Práctica no dependen de Supabase ni de Electron, así que se desarrollan y se prueban sin servidor.
@@ -431,7 +504,7 @@ De esos recortes se siguen tres consecuencias que el resto del documento da por 
   - **Storage** para el kit predefinido (bucket público de lectura).
   - Plan pago para producción.
 - **Google Cloud Console**: un client ID de OAuth configurado en Supabase Auth.
-- Conexión a Internet para usar la aplicación.
+- Conexión a Internet para identificarse, descargar el kit y usar la biblioteca; sin ella, con sesión guardada, solo el borrador local (RF-39.3).
 - Samples de batería con licencia de redistribución para el kit predefinido.
 - Node y Vite para desarrollo y build.
 - Una batería electrónica con salida USB MIDI para grabar tomas y para el Modo Práctica.
