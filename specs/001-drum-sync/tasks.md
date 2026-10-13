@@ -17,7 +17,7 @@ description: "Lista de tareas de Drum Sync"
 
 - **[P]**: se puede hacer en paralelo (archivos distintos, sin dependencias pendientes)
 - **[Story]**: historia a la que pertenece (US1 a US7)
-- Las tareas marcadas **🎨** son de interfaz y **no se empiezan hasta que el diseño visual esté aprobado** (T021, constitución, principio IV)
+- Las tareas marcadas **🎨** son de interfaz y se apoyan en el diseño visual aprobado (T021, constitución, principio IV). Como T021 forma parte de Foundational, el diseño queda aprobado antes de empezar cualquier historia
 
 ## Cómo se prueba cada commit (constitución)
 
@@ -34,10 +34,10 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 - [ ] T003 Crear la estructura de carpetas del plan: `src/core`, `src/audio`, `src/midi`, `src/notation`, `src/data`, `src/ui/screens`, `src/ui/components`, `src/test-seam`, `electron/`, `supabase/migrations`, `supabase/seed`, `tests/features`, `tests/steps`, `tests/support`, `tests/unit`
 - [ ] T004 [P] Crear `.gitignore` (carpeta `node_modules`, `dist`, `.env`, resultados de Playwright, datos locales de Supabase) y `.env.example` solo con `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`; la clave `service_role` nunca va en la app ni en `.env.example` (RNF-14)
 - [ ] T005 [P] Configurar `vitest.config.ts` para `tests/unit` y comprobar que `npm test` corre
-- [ ] T006 [P] Configurar `playwright.config.ts` con `playwright-bdd` (features en `tests/features`, pasos en `tests/steps`) y dos proyectos: navegador contra `http://localhost:5174` y Electron (research R-02)
+- [ ] T006 [P] Configurar `playwright.config.ts` con `playwright-bdd` (features en `tests/features`, pasos en `tests/steps`) y dos proyectos base: navegador contra `http://localhost:5174` y Electron (research R-02); el proyecto de Electron se ejecuta además en cada sistema operativo (Windows, macOS y Linux) para los escenarios que dependen del sistema (AC-79, AC-107). El proyecto de Electron lanza la aplicación con la compilación de pruebas (`npm run build:test`, T009), nunca con la de producción
 - [ ] T007 [P] Crear el esqueleto de Electron: `electron/main.ts`, `electron/preload.ts` y `forge.config.ts` (Forge solo para empaquetar), con aislamiento de contexto activado y sin integración de Node en el renderizador
 - [ ] T008 [P] Inicializar Supabase local con `npx supabase init` (`supabase/config.toml`) y documentar `npx supabase start` en `specs/001-drum-sync/quickstart.md`
-- [ ] T009 Agregar a `package.json` los scripts `dev`, `test`, `test:e2e` y `verify` (Vitest más todos los escenarios en ambos proyectos), según `quickstart.md`
+- [ ] T009 Agregar a `package.json` los scripts `dev`, `build`, `build:test`, `test`, `test:e2e` y `verify` (Vitest más todos los escenarios en ambos proyectos), según `quickstart.md`. `build:test` compila el renderizador con `VITE_TEST_SEAM` activa para las pruebas en Electron; `build` (producción) nunca incluye la capacidad de pruebas (AC-128)
 
 ---
 
@@ -53,14 +53,14 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 - [ ] T013 [P] Implementar `src/core/migrations/index.ts` (lleva cualquier versión anterior a la actual en orden, hoy solo existe la versión 1) y la partitura de prueba `tests/support/fixtures/score-v1.json` con notas en todas las figuras y piezas (RNF-09)
 - [ ] T014 [P] Escribir `tests/unit/undo.test.ts` (AC-117) e implementar `src/core/undo.ts`: instantáneas inmutables, máximo 100 (se descarta la más antigua al superarlo), se pierde al cerrar la aplicación; una toma o un cambio de tipo de compás cuenta como un solo cambio
 - [ ] T015 [P] Implementar `src/audio/clock.ts`: envoltorio del reloj de audio (`AudioContext.currentTime`) con una versión controlable para pruebas (research R-04)
-- [ ] T016 Implementar `src/test-seam/index.ts` según `contracts/test-seam.md`: `midi.setAvailability`, `midi.connectDevice`, `midi.disconnectDevice`, `midi.hit` (intensidad 64 por defecto), `midi.release`, `clock.freeze/advance/scheduled`, `network.set/requests`; se incluye solo si `VITE_TEST_SEAM` está activa y nunca en producción (depende de T015)
+- [ ] T016 Implementar `src/test-seam/index.ts` según `contracts/test-seam.md`, solo la parte de reloj y red: `clock.freeze/advance/scheduled` y `network.set/requests`; se incluye solo si `VITE_TEST_SEAM` está activa y nunca en producción. La parte de MIDI simulado se agrega en US5 (T119) porque necesita los módulos MIDI (depende de T015)
 - [ ] T017 [P] Implementar `tests/support/supabase.ts`: levantar y reiniciar el servidor local de Supabase, crear usuarios de prueba y cargar el kit de prueba; la clave `service_role` se usa solo aquí, nunca en `src/` ni `electron/` (research R-12)
 - [ ] T018 [P] Implementar `src/data/supabase.ts`: cliente `supabase-js` solo con la clave pública, flujo con PKCE y sin persistir la sesión fuera del puente seguro (RNF-13)
-- [ ] T019 [P] Definir los pasos comunes de Playwright en `tests/steps/common.steps.ts` (abrir la aplicación, inyectar golpes, avanzar el reloj, simular red, iniciar sesión con un usuario de prueba)
-- [ ] T020 [P] Documentar el equipo de referencia para los p95 en `specs/001-drum-sync/research.md` (ya registrado: AMD Ryzen 7 Pro 7735U, 15 GB, Windows 11, Node v24.18.0) y fijar cómo se limita la red a 10 Mbps en `tests/support/network.ts`
-- [ ] T021 **🎨 Compuerta de diseño visual**: preparar las imágenes de las 7 pantallas de la sección "Pantallas y Estados" del spec (identificación, editor, conexión de la batería, grabación de toma, Modo Práctica, biblioteca y diálogos) en `specs/001-drum-sync/design/`, mostrarlas a un humano y registrar su aprobación en `specs/001-drum-sync/design/APROBADO.md`. Si el diseño cambia durante la implementación, se vuelve a mostrar (constitución, principio IV)
+- [ ] T019 [P] Definir los pasos comunes de Playwright en `tests/steps/common.steps.ts`: abrir la aplicación, avanzar el reloj y simular la red. Los pasos de golpes MIDI van en US5 (T079) y los de inicio de sesión con un usuario de prueba en US1 (T060)
+- [ ] T020 [P] Fijar en `tests/support/network.ts` cómo se limita la red a 10 Mbps para las mediciones de AC-91 y AC-104; el equipo de referencia para los p95 ya está registrado en `specs/001-drum-sync/research.md`
+- [ ] T021 **🎨 Compuerta de diseño visual**: preparar maquetas en HTML de las 7 pantallas de la sección "Pantallas y Estados" del spec (identificación, editor, conexión de la batería, grabación de toma, Modo Práctica, biblioteca y diálogos), tomar capturas en PNG, guardarlas en `specs/001-drum-sync/design/`, mostrarlas a un humano, iterar con sus comentarios y registrar su aprobación en `specs/001-drum-sync/design/APROBADO.md`. Si el diseño cambia durante la implementación, se vuelve a mostrar (constitución, principio IV)
 
-**Checkpoint**: Núcleo base y capacidad de pruebas listos. Las tareas 🎨 se desbloquean al aprobarse T021.
+**Checkpoint**: Núcleo base, capacidad de pruebas y **diseño visual aprobado (T021)** listos. Por decisión del proyecto, el diseño se aprueba antes de empezar cualquier historia: ninguna historia comienza hasta cerrar esta fase completa.
 
 ---
 
@@ -114,9 +114,9 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 - [ ] T040 [US3] Implementar `src/audio/scheduler.ts`: horizonte de 120 ms, instante de cada evento calculado como `inicio + posición`, nunca sumando intervalos; el cambio de tempo vale desde el siguiente compás con un nuevo punto de referencia (RF-18.7, research R-04) (depende de T015)
 - [ ] T041 [P] [US3] Implementar `src/audio/metronome.ts`: pulsos según el tipo de compás con acento en el primer tiempo, ajustado al tempo, con volumen propio
 - [ ] T042 [P] [US3] Implementar `src/audio/gain.ts` con las ganancias de AC-11: normal 1,0; acento 1,3; fantasma 0,4; flam con dos ataques (adorno con ganancia 0,5 a 30 ms antes del tiempo y principal con 1,0 en el tiempo)
-- [ ] T043 [US3] Implementar `src/audio/kit.ts`: descargar `manifest.json` y los samples, decodificarlos a `AudioBuffer` y exponer los estados `cargando`, `listo` y `error` con Reintentar (RF-21.3, RF-21.5); después de cargado, la reproducción no hace ningún pedido a la red (RNF-15)
+- [ ] T043 [US3] Implementar `src/audio/kit.ts`: descargar `manifest.json` y los samples, decodificarlos a `AudioBuffer` y exponer los estados `cargando`, `listo` y `error` con Reintentar (RF-21.3, RF-21.5); después de cargado, la reproducción no hace ningún pedido a la red (RNF-15) (depende de T045 y T046)
 - [ ] T044 [US3] Implementar `src/audio/transport.ts`: Play desde el compás 1, Detener cancela los eventos pendientes (AC-46), bucle, metrónomo activable en cualquier momento; el tipo de compás queda deshabilitado mientras suena (RF-18.8) (depende de T040, T041, T042, T043)
-- [ ] T045 [P] [US3] Preparar el kit en `supabase/seed/kit/`: 13 samples (uno por pieza) con licencia CC0 o de compra con redistribución, `manifest.json` con `piece`, `file`, `sizeBytes`, `license` y `origin`, tamaño total de 3 MB o menos (RNF-15); requiere que una persona elija o compre los samples
+- [ ] T045 [P] [US3] Preparar el kit en `supabase/seed/kit/`: 13 samples (uno por pieza) con licencia CC0 o de compra con redistribución, `manifest.json` con `piece`, `file`, `sizeBytes`, `license` y `origin`, tamaño total de 3 MB o menos (RNF-15); 👤 requiere que una persona elija o compre los samples; conviene empezarla pronto, porque T043 depende de ella
 - [ ] T046 [US3] Implementar la carga del kit al backend local en `tests/support/supabase.ts` y la política del bucket `kit` (lectura pública) en `supabase/migrations/0001_kit_bucket.sql`
 - [ ] T047 [US3] 🎨 Implementar `src/ui/components/Transport.tsx` con Play/Detener, bucle, tempo (número entre 30 y 260), selectores de tipo de compás, metrónomo con su volumen, indicador de posición sobre la partitura y el estado del kit ("Cargando kit" y error con Reintentar) (depende de T021 y T044)
 - [ ] T048 [US3] Ejecutar `tests/features/transport.feature` y dejar en verde los escenarios de la historia 3
@@ -133,7 +133,7 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T049 [P] [US1] Escribir `tests/features/auth.feature` con AC-74, AC-75, AC-77 a AC-82, AC-94 a AC-98, AC-131, AC-136 y AC-137; AC-76 queda en la historia 4 porque necesita la biblioteca
+- [ ] T049 [P] [US1] Escribir `tests/features/auth.feature` con AC-74, AC-75, AC-77, AC-78, AC-80 a AC-82, AC-94 a AC-98, AC-131, AC-136 y AC-137; AC-76 queda en la historia 4 porque necesita la biblioteca y AC-79 (Linux sin almacén de secretos) queda en T115
 - [ ] T050 [P] [US1] Escribir los pasos en `tests/steps/auth.steps.ts`
 
 ### Implementation for User Story 1
@@ -147,9 +147,9 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 - [ ] T057 [US1] Implementar `electron/preload.ts` con `secureStore`, `auth.openLogin` (solo `https` del proveedor), `auth.onCallback` y `env` según `contracts/ipc-preload.md`
 - [ ] T058 [US1] Implementar `src/data/session.ts`: login en el navegador del sistema, retorno por `drumsync://`, renovación automática, persistencia por el puente seguro (en el navegador de desarrollo solo en memoria), mensajes de RF-35.2 y aviso de RF-36.1 ante el rechazo del servidor
 - [ ] T059 [US1] Implementar el cierre de sesión en `src/data/session.ts` (RF-36.2): mostrar solo la pantalla de identificación y descartar de la memoria la partitura abierta, el historial de Deshacer, la biblioteca, el mapeo MIDI y los umbrales, y borrar el borrador local; el kit puede quedar cargado
-- [ ] T060 [P] [US1] Implementar `tests/support/auth.ts`: usuarios de prueba creados en el servidor local que reemplazan el login con Google en los escenarios
+- [ ] T060 [P] [US1] Implementar `tests/support/auth.ts`: usuarios de prueba creados en el servidor local que reemplazan el login con Google en los escenarios, y los pasos comunes para iniciar sesión con un usuario de prueba en `tests/steps/session.steps.ts`; además ayudantes para AC-95, AC-96 y AC-97 que alteran la firma de una credencial real, generan una vencida, fabrican una credencial de Google falsa (firma inválida, destinatario ajeno o vencida) y reutilizan una credencial de renovación ya usada, y los escenarios comprueban que el servidor rechaza todo y no se inicia ninguna sesión. Limitación aceptada: no se reproduce una credencial firmada por Google con destinatario ajeno
 - [ ] T061 [US1] 🎨 Implementar `src/ui/screens/Identification.tsx` con el botón "Identificarse con Google" y los estados "Almacén de claves no disponible", los dos mensajes de RF-35.2 y el aviso "Tu sesión se cerró porque iniciaste en otra computadora" (depende de T021 y T058)
-- [ ] T062 [US1] Implementar en `src/ui/App.tsx` la barrera de acceso: sin sesión solo se ve la identificación (RF-32) y el kit se descarga después del login (depende de T043 y T058)
+- [ ] T062 [US1] 🎨 Implementar en `src/ui/App.tsx` la barrera de acceso: sin sesión solo se ve la identificación (RF-32) y el kit se descarga después del login (depende de T021, T043 y T058)
 - [ ] T063 [US1] Ejecutar `tests/features/auth.feature` y dejar en verde los escenarios de la historia 1 (los de Electron se ejecutan en el proyecto de Electron)
 
 **Checkpoint**: La identificación funciona; la sesión es única y está cifrada.
@@ -178,7 +178,7 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 - [ ] T072 [US4] Implementar `src/data/autosave.ts`: guardado con espera corta y límite máximo de 5 s después del último cambio (RNF-16), reintento cada 5 s ante fallo con conexión y aviso "No se están guardando los cambios" que desaparece al guardar (RF-22.5)
 - [ ] T073 [US4] Implementar en `src/ui/state/scoreStore.ts` la acción Nueva partitura (partitura vacía de 1 compás) con confirmación si hay cambios sin guardar, y la misma confirmación al abrir otra de la biblioteca (RF-22.3, RF-22.4, RF-25.1)
 - [ ] T074 [US4] 🎨 Implementar `src/ui/screens/Library.tsx` con el listado, abrir, eliminar con confirmación, el diálogo de guardado con nombre y sus errores, y los diálogos de confirmación (depende de T021 y T070)
-- [ ] T075 [US4] Recuperar la partitura en curso al reabrir la aplicación en `src/ui/App.tsx` (RF-22.2)
+- [ ] T075 [US4] 🎨 Recuperar la partitura en curso al reabrir la aplicación en `src/ui/App.tsx` (RF-22.2) (depende de T021 y T071)
 - [ ] T076 [US4] Ejecutar `tests/features/library.feature` y dejar en verde los escenarios de la historia 4
 
 **Checkpoint**: Las historias 1, 2, 3 y 4 (todas P1) funcionan juntas.
@@ -195,7 +195,7 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 
 - [ ] T077 [P] [US5] Escribir `tests/features/midi.feature` con AC-18 a AC-25, AC-90 y AC-115
 - [ ] T078 [P] [US5] Escribir `tests/features/recording.feature` con AC-16, AC-26 a AC-39, AC-132 y AC-133
-- [ ] T079 [P] [US5] Escribir los pasos en `tests/steps/midi.steps.ts` y `tests/steps/recording.steps.ts`
+- [ ] T079 [P] [US5] Escribir los pasos en `tests/steps/midi.steps.ts` y `tests/steps/recording.steps.ts`, incluidos los pasos comunes para inyectar golpes MIDI simulados (usan la parte MIDI de la capacidad de pruebas, T119)
 - [ ] T080 [P] [US5] Escribir `tests/unit/quantizer.test.ts` (AC-26, AC-31, AC-38, AC-39, RNF-06) y `tests/unit/articulation.test.ts` (AC-132): fantasma si la intensidad es menor o igual al umbral de fantasma, acento si es mayor o igual al de acento, normal en el resto, y el flam nunca por intensidad
 
 ### Implementation for User Story 5
@@ -205,6 +205,7 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 - [ ] T083 [P] [US5] Implementar `src/midi/hits.ts`: un golpe es un mensaje de nota con intensidad mayor que cero; soltar el pad o la intensidad cero se ignoran (RF-17.3); la marca de tiempo es `event.timeStamp`
 - [ ] T084 [P] [US5] Implementar `src/core/articulation.ts`: articulación por intensidad con umbrales por defecto 30 y 100, y validación "enteros de 1 a 127 con fantasma menor que acento" (si no se cumple, no se guardan)
 - [ ] T085 [US5] Implementar `src/core/quantizer.ts`: cuantizar al paso más cercano de la grilla elegida (semicorchea 12, corchea de tresillo 16, corchea 24, negra 48) con error máximo de medio paso, conservar golpes simultáneos, fusionar los de la misma pieza en el mismo paso tomando la articulación de la mayor intensidad, duración por la separación con el golpe siguiente (el último dura hasta el final del compás) y reemplazar lo escrito en los compases de la toma
+- [ ] T119 [US5] Agregar a `src/test-seam/index.ts` la parte de MIDI simulado según `contracts/test-seam.md`: `midi.setAvailability`, `midi.connectDevice`, `midi.disconnectDevice`, `midi.hit` (intensidad 64 por defecto) y `midi.release`; el golpe inyectado recorre el mismo camino que uno real (mapeo, cuantización, evaluación) y la parte MIDI también queda fuera de la compilación de producción (depende de T016, T081, T082, T083 y T085)
 - [ ] T086 [US5] Crear `supabase/migrations/0005_user_settings.sql`: tabla `user_settings` con `owner_id` único, `midi_mapping`, `ghost_threshold` y `accent_threshold` (enteros de 1 a 127, fantasma menor que acento; por defecto 30 y 100) y RLS con `is_session_active()`
 - [ ] T087 [US5] Implementar `src/data/settingsRepo.ts` para guardar y leer el mapeo y los umbrales de la cuenta (RF-12, RF-14.9)
 - [ ] T088 [US5] Implementar `src/audio/take.ts`: toma de 1 a 128 compases que siempre empieza en el compás 1; arranque al primer golpe o con cuenta previa de un compás con metrónomo aunque esté desactivado (los golpes de la cuenta no se escriben); termina al completar los compases, con Detener o con Esc conservando lo escrito; tempo y tipo de compás bloqueados (RF-18.8); la desconexión de la batería termina la toma (RF-10.6); una sola entrada de Deshacer
@@ -271,14 +272,25 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 
 - [ ] T109 [P] Escribir `tests/features/access-control.feature` y sus pasos con el cliente de solicitudes de Playwright (AC-99, AC-100, AC-101, AC-102): un usuario B con credenciales válidas no lee, modifica, borra ni crea filas de A llamando directamente al servidor, y sin credenciales el servidor rechaza todo
 - [ ] T110 [P] Escribir `tests/features/quality.feature` y sus pasos con AC-85, AC-88, AC-89, AC-92, AC-93, AC-103 y AC-138 (tiempos, grilla, formato, kit y migraciones)
-- [ ] T111 [P] Implementar `tests/perf/` para AC-86, AC-87, AC-91 y AC-104: 100 muestras por medición, red a 10 Mbps cuando corresponde, falla si el p95 de las 100 muestras supera el límite, ejecutado en el equipo de referencia
-- [ ] T112 Configurar los empaquetadores de Electron Forge para Windows, macOS y Linux en `forge.config.ts` y probar que cada instalador llega a la pantalla de identificación (AC-107, RNF-17)
+- [ ] T111 [P] Escribir `tests/features/performance.feature` con AC-86, AC-87, AC-91 y AC-104 y sus pasos en `tests/steps/performance.steps.ts`, que llaman a los scripts de medición de `tests/perf/`: 100 muestras por medición, red a 10 Mbps cuando corresponde, y el escenario falla si el p95 de las 100 muestras supera el límite; se ejecuta con Playwright en el equipo de referencia (constitución, principio I)
+- [ ] T112 Configurar los empaquetadores de Electron Forge para Windows, macOS y Linux en `forge.config.ts` y escribir `tests/features/installers.feature` con AC-107 y sus pasos en `tests/steps/installers.steps.ts`: instala el paquete generado y comprueba con Playwright que llega a la pantalla de identificación; se ejecuta en el proyecto de Playwright de cada sistema operativo (RNF-17)
 - [ ] T113 Verificar que la compilación de producción no incluye `window.__drumsyncTest` y que su inyección no está disponible (AC-128) en `tests/features/quality.feature`
 - [ ] T114 Revisión de seguridad OWASP Top 10 de todo el código con la escala OWASP Risk Rating: RLS en cada tabla y bucket, ausencia de `service_role` en la app, endurecimiento de Electron (aislamiento de contexto, permisos, navegación) y cifrado de sesión y borrador; registrar el resultado en `specs/001-drum-sync/security-review.md` y corregir críticas y altas
-- [ ] T115 Probar `electron/secureStore.ts` en una distribución de Linux sin almacén de secretos y confirmar el aviso "Almacén de claves no disponible" (AC-79, research R-09)
+- [ ] T115 Escribir `tests/features/linux-keystore.feature` con AC-79 y sus pasos en `tests/steps/linux-keystore.steps.ts`: en una distribución de Linux sin almacén de secretos, al intentar identificarse se muestra "Almacén de claves no disponible" y no se inicia sesión (research R-09); se ejecuta en el proyecto de Playwright de Linux
 - [ ] T116 Crear `docs/estado-rf.json` y `scripts/generar-estado.mjs` con todos los RF del `PRD.md` (incluidos los nuevos, como RF-08.5, RF-09.1 y RF-14.8), que necesita la skill `actualizar-estado-rf` al hacer un push
 - [ ] T117 Ejecutar la validación manual con batería real descrita en `quickstart.md` y los objetivos de producto SC-002 y SC-003
 - [ ] T118 Ejecutar `npm run verify` completo y confirmar la trazabilidad: todos los AC del `PRD.md` tienen su escenario etiquetado en `tests/features`
+
+---
+
+## Phase 11: Despliegue (al final)
+
+**Purpose**: Dejar el backend de producción funcionando antes de distribuir la aplicación. Se hace después de Polish y no bloquea el desarrollo. Las tareas marcadas **👤** necesitan una persona (cuentas, claves o pago) y no las puedo hacer yo.
+
+- [ ] T120 👤 Crear el cliente OAuth en Google Cloud Console y configurarlo como proveedor Google en el proyecto de Supabase de producción (PRD: dependencias)
+- [ ] T121 👤 Crear el proyecto de Supabase de producción con plan pago y copias de seguridad diarias, y aplicar todas las migraciones de `supabase/migrations/` (PRD: riesgos, el plan gratuito solo sirve para desarrollo)
+- [ ] T122 👤 Subir el kit y su `manifest.json` al bucket `kit` de producción, con la licencia (CC0 o compra con redistribución) y el origen de cada sample ya registrados, y comprobar que el total es de 3 MB o menos (RNF-15, AC-103)
+- [ ] T123 Verificar en producción el ajuste "una sola sesión por usuario", la función `is_session_active()`, Row Level Security en cada tabla y que la app solo lleva la clave pública, repitiendo AC-99 a AC-102 y AC-131 contra el proyecto real (RNF-14, RF-36.1)
 
 ---
 
@@ -287,9 +299,10 @@ Antes de cada commit: `npm run verify` (Vitest más todos los escenarios Playwri
 ### Phase Dependencies
 
 - **Setup (Phase 1)**: sin dependencias.
-- **Foundational (Phase 2)**: depende de Setup y bloquea las historias. T021 (diseño aprobado) bloquea todas las tareas 🎨.
+- **Foundational (Phase 2)**: depende de Setup y bloquea las historias, incluida la aprobación del diseño visual (T021). Con T021 cerrada, las tareas 🎨 ya no tienen otra espera que sus dependencias normales.
 - **Historias (Phase 3 a 9)**: dependen de Foundational. Se hacen en orden de entrega del plan.
 - **Polish (Phase 10)**: depende de las historias que cubre cada tarea.
+- **Despliegue (Phase 11)**: depende de Polish, en particular de T112 (instaladores), T114 (revisión de seguridad) y T045 (samples con licencia). No bloquea el desarrollo.
 
 ### User Story Dependencies
 
@@ -346,7 +359,7 @@ Task: "Implementar src/notation/staff.ts (T029)"
 
 1. Agregar US1 (identificación), con el spike T051 primero, y luego US4 (biblioteca): con las cuatro historias P1 el producto guarda y recupera el trabajo en la nube.
 2. Agregar US5 (MIDI y tomas) y US6 (práctica).
-3. Agregar US7 (conexión) y cerrar con Polish.
+3. Agregar US7 (conexión), cerrar con Polish y terminar con el Despliegue (Phase 11).
 
 ### Reglas de entrega
 

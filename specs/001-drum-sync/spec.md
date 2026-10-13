@@ -489,5 +489,6 @@ Cada término tiene un único significado en todo el spec.
 - Hay un único mapeo MIDI por cuenta, no uno por batería.
 - Fuera de alcance, según el PRD: transcripción de audio, IA, importar o exportar archivos, funciones de profesor/alumno, edición simultánea, otros proveedores de identificación, versión web para usuarios finales, notación avanzada, accesibilidad, otros idiomas, mezclador por pieza, rehacer, y hardware que no sea una batería USB MIDI.
 - La accesibilidad (lector de pantalla, contraste, navegación por teclado) y los idiomas distintos del español quedan fuera de esta versión por decisión de alcance, no por omisión; se reevalúan en una versión posterior.
+- En las pruebas automáticas, el rechazo de credenciales de Google se comprueba con credenciales falsas (firma inválida, destinatario ajeno o vencida); una credencial firmada por Google con destinatario ajeno no se puede reproducir y no se prueba.
 - El registro y la auditoría de eventos de seguridad (logins fallidos, credenciales rechazadas, accesos denegados) quedan fuera de la aplicación: se usan los registros del proveedor de identidad y del servidor. Es una decisión explícita, no una omisión.
 - Los objetivos O-1 y O-4 del PRD son de producto y no tienen criterio de aceptación automatizado.

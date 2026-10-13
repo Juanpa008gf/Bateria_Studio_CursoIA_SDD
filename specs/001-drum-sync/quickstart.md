@@ -22,6 +22,7 @@ Comandos que el plan agrega y que crearán las tareas:
 
 | Comando | Para qué |
 |---|---|
+| `npm run build:test` | compila el renderizador con la capacidad de pruebas activa, para los escenarios en Electron (la compilación de producción nunca la incluye) |
 | `npm run test:e2e` | todos los escenarios Gherkin con Playwright, en navegador y en Electron |
 | `npm run verify` | Vitest más todos los escenarios; es el paso previo a cada commit (constitución, principio II) |
 | `npx supabase start` | backend local de pruebas con base, Auth y Storage |
@@ -42,7 +43,7 @@ Cada fila agrupa los AC del PRD que se prueban con Playwright. El resultado espe
 | 8 | Grabar tomas: cuantización, duración, articulación y fin | 5 | AC-26 a AC-39, AC-132, AC-133 | MIDI simulado y reloj controlado |
 | 9 | Modo Práctica: colores, desvío, omitidas, bucle y volumen | 6 | AC-65 a AC-73, AC-112, AC-113, AC-118, AC-120, AC-121 | MIDI simulado y reloj controlado |
 | 10 | Conexión: sin conexión, borrador, reconexión y conflicto | 7 | AC-83, AC-84, AC-105, AC-122, AC-124 a AC-127, AC-129 | Electron con red simulada |
-| 11 | Calidad: rendimiento, formato, seguridad y plataformas | calidad | AC-86 a AC-89, AC-91 a AC-104, AC-107, AC-128, AC-138 | API directa, mediciones y instaladores |
+| 11 | Calidad: rendimiento, formato, seguridad y plataformas | calidad | AC-79, AC-86 a AC-89, AC-91 a AC-104, AC-107, AC-128, AC-138 | escenarios Gherkin con Playwright: API directa, mediciones (`performance.feature`), instaladores (`installers.feature`) y Linux (`linux-keystore.feature`) |
 
 ## Antes de cada commit (constitución)
 

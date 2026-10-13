@@ -30,7 +30,7 @@ El enfoque técnico separa un **núcleo en TypeScript puro** (grilla de 48 unida
 
 **Constraints**: la red nunca está en el camino del timing (RNF-15); el editor y la reproducción no dependen de Web MIDI (RNF-07); kit de 3 MB o menos; autoguardado a 5 s como máximo (RNF-16); sin `service_role` en la app (RNF-14); solo sesión y borrador cifrados en disco (RNF-13).
 
-**Scale/Scope**: hasta 128 compases por partitura, 13 piezas del kit, 7 pantallas, 138 AC del PRD, número de partituras por usuario sin límite.
+**Scale/Scope**: hasta 128 compases por partitura, 13 piezas del kit, 7 pantallas, todos los AC del PRD, número de partituras por usuario sin límite.
 
 ## Constitution Check
 
@@ -79,21 +79,49 @@ src/
 │   ├── grid.ts          #   48 unidades por negra y tablas de figuras
 │   ├── score.ts         #   modelo de partitura, compases y notas
 │   ├── rests.ts         #   silencios derivados por voz
+│   ├── measures.ts      #   añadir y quitar compases (1 a 128)
+│   ├── edit.ts          #   escribir, seleccionar y borrar notas, tresillos
 │   ├── timesig.ts       #   cambio de tipo de compás y tope de 128
 │   ├── quantizer.ts     #   cuantización, fusión y duración de toma
 │   ├── articulation.ts  #   articulación por intensidad y umbrales
 │   ├── practice.ts      #   comparación, desvío, colores y omitidas
 │   ├── undo.ts          #   historial de 100 cambios
-│   ├── library.ts       #   nombres, unicidad y cambios sin guardar
+│   ├── library.ts       #   nombres y unicidad
+│   ├── dirty.ts         #   cambios sin guardar en la biblioteca
 │   └── migrations/      #   migraciones del formato por versión
-├── audio/               # Web Audio: scheduler, metrónomo, kit en memoria
-├── midi/                # Web MIDI, mapeo General MIDI (midi.ts), captura de golpes
-├── notation/            # Render VexFlow y detección de clic (pieza y posición)
-├── data/                # supabase-js, sesión, repositorios, borrador y conexión
-├── ui/                  # React: pantallas, componentes y estado
-│   ├── screens/         #   identificación, editor, biblioteca, práctica
-│   └── components/
-├── test-seam/           # inyección de golpes y reloj (solo entorno de pruebas)
+├── audio/               # Web Audio
+│   ├── clock.ts         #   reloj de audio (controlable en pruebas)
+│   ├── scheduler.ts     #   programación con horizonte de 120 ms
+│   ├── metronome.ts     #   metrónomo con acento y volumen propio
+│   ├── gain.ts          #   ganancias por articulación
+│   ├── kit.ts           #   kit en memoria: cargando, listo y error
+│   ├── transport.ts     #   Play, Detener, bucle y cambio de tempo
+│   ├── take.ts          #   grabación de tomas
+│   └── practice.ts      #   sesión del Modo Práctica
+├── midi/                # Web MIDI
+│   ├── midi.ts          #   mapeo General MIDI y reasignación
+│   ├── access.ts        #   permiso, entradas y desconexión
+│   └── hits.ts          #   captura de golpes
+├── notation/            # VexFlow
+│   ├── staff.ts         #   posición y cabeza de cada pieza
+│   ├── render.ts        #   pentagrama, voces, barras, tresillos y silencios
+│   └── hitTest.ts       #   clic: pieza, posición y selección de nota
+├── data/                # supabase-js y datos
+│   ├── supabase.ts      #   cliente con la clave pública
+│   ├── session.ts       #   login, renovación y cierre de sesión
+│   ├── scoresRepo.ts    #   biblioteca
+│   ├── currentScoreRepo.ts #   partitura en curso con revisión
+│   ├── settingsRepo.ts  #   mapeo MIDI y umbrales
+│   ├── autosave.ts      #   autoguardado con reintento
+│   ├── connectivity.ts  #   detección de conexión
+│   ├── draft.ts         #   borrador sin conexión
+│   └── sync.ts          #   subida del borrador y conflictos
+├── ui/                  # React
+│   ├── App.tsx          #   barrera de acceso y recuperación de la partitura
+│   ├── screens/         #   Identification, Editor, MidiPanel, RecordingPanel, Practice, Library
+│   ├── components/      #   Transport, ConnectionBanner
+│   └── state/           #   scoreStore, practiceStore
+├── test-seam/           # reloj, red y MIDI simulados (solo entorno de pruebas)
 └── main.tsx
 
 electron/
@@ -108,8 +136,11 @@ supabase/
 tests/
 ├── features/            # escenarios Gherkin (.feature), uno por grupo de AC
 ├── steps/               # definiciones de pasos de Playwright
-├── support/             # fixtures, servidor local de Supabase, usuarios de prueba
+├── support/             # fixtures, servidor local de Supabase, usuarios de prueba, red a 10 Mbps
+├── perf/                # scripts de medición que llaman los escenarios de rendimiento
 └── unit/                # Vitest del núcleo
+
+specs/001-drum-sync/design/  # imágenes de las 7 pantallas y APROBADO.md (compuerta de diseño)
 ```
 
 **Structure Decision**: proyecto único de escritorio (`src/` más `electron/`), con `supabase/` para el backend y `tests/` para las dos suites. `src/core` no importa nada de `data`, `audio`, `midi`, `ui` ni Electron, de modo que el editor, la reproducción, la grabación y el Modo Práctica se desarrollan y prueban sin servidor (riesgo señalado en el PRD).
