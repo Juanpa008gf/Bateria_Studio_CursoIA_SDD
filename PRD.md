@@ -58,6 +58,8 @@ Drum Sync junta las tres en un solo lugar, deja escribir tocando, y agrega la qu
 - **RF-06.3**: El sistema debe reproducir cada articulación con un sonido distinto.
 - **RF-07.1**: El sistema debe elegir el instrumento según la altura del clic en el pentagrama.
 - **RF-07.2**: El sistema debe elegir la posición rítmica según la posición horizontal del clic.
+- **RF-07.3**: Un clic sobre una nota ya escrita debe seleccionarla, sin borrarla ni escribir otra; un clic sobre un lugar sin nota debe escribir una nota (RF-07.1, RF-07.2).
+- **RF-07.4**: El sistema debe permitir borrar la nota seleccionada con la tecla Supr o con un botón Borrar. El borrado cuenta como un cambio de Deshacer (RF-09), y los silencios del compás se recalculan solos (RF-04.1).
 - **RF-08.1**: El sistema debe permitir añadir compases.
 - **RF-08.2**: El sistema debe permitir quitar el último compás.
 - **RF-08.3**: El sistema no debe permitir quitar el último compás cuando la partitura tiene un solo compás.
@@ -246,6 +248,8 @@ Drum Sync necesita conexión para identificarse, descargar el kit y usar la bibl
   | Splash | 2.ª línea adicional superior | cruz |
 
 - **AC-04 (RF-03.1, RF-07.1, RF-07.2)**: **Dada** la figura Negra elegida, **cuando** se hace clic a la altura de la caja en el tiempo 2 del compás 1, **entonces** aparece una negra de caja en el tiempo 2.
+- **AC-139 (RF-07.3)**: **Dado** un compás con una negra de caja en el tiempo 1, **cuando** se hace clic sobre esa nota, **entonces** queda seleccionada y la partitura no cambia. **Cuando** se hace clic en un lugar sin nota con la figura Negra elegida, **entonces** se escribe una nota nueva en ese lugar.
+- **AC-140 (RF-07.4, RF-04.1, RF-09)**: **Dado** un compás de 4/4 con una negra de caja en el tiempo 1 y una de bombo en el tiempo 3, **cuando** se selecciona la caja y se pulsa Supr (o el botón Borrar), **entonces** la caja desaparece, el bombo no cambia y la voz de manos muestra un silencio de compás completo. **Cuando** se pulsa Deshacer, **entonces** vuelve la caja.
 - **AC-05 (RF-03.1)**: **Dado** un compás de 4/4 vacío, **cuando** se escribe cada figura en el tiempo 1, **entonces** ocupa en la grilla las unidades de esta tabla:
 
   | Figura | Unidades de la grilla |

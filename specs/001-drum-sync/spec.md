@@ -42,6 +42,7 @@
 - Q: ¿Qué articulación reciben las notas al grabar una toma? → A: La define la intensidad del golpe: fantasma hasta 30, acento desde 100 y normal en el resto, con umbrales ajustables por cuenta; el flam nunca se asigna por intensidad. Esto reemplaza "notas normales" de RF-14.2 y el recorte de "dinámica automática" del PRD.
 - Q: ¿Qué pasa si se usa la misma cuenta en dos computadoras? → A: Solo se permite una sesión activa por cuenta: al iniciar sesión en otra computadora se cierra la anterior.
 - Q: ¿Qué pasa si el servidor falla al guardar, abrir o eliminar una partitura con conexión? → A: Mensaje de error ("No se pudo guardar/abrir/eliminar") con opción de reintentar; la biblioteca y la partitura en curso no cambian.
+- Q: ¿Cómo se borra una nota con el mouse? → A: Clic sobre una nota la selecciona y Supr (o un botón Borrar) la elimina; el borrado cuenta como un cambio de Deshacer y no pide confirmación.
 - Q: ¿Qué pasa con lo escrito cuando la conexión se corta con la aplicación ya abierta y luego vuelve? → A: El mismo mecanismo que al abrir sin conexión: se guarda en el borrador local y, al reconectar, se sube sin preguntar si el servidor no cambió, o se pregunta al usuario si cambió.
 - Q: ¿El spec exige poder simular golpes MIDI y controlar el reloj de audio en las pruebas? → A: Sí, como requisito (FR-048 / RNF-18), solo en el entorno de pruebas y no disponible en producción.
 - Q: ¿SC-002 y SC-003 tienen prueba automática? → A: No: se marcan como validación manual con usuarios, igual que O-4 y O-1 del PRD.
@@ -102,6 +103,8 @@ El baterista escribe un compás de batería haciendo clic en el pentagrama: elig
 12. **Given** una nota recién escrita, **When** se pulsa Deshacer, **Then** la partitura vuelve a como estaba antes. (AC-17)
 13. **Given** una partitura a la que se le hicieron 101 cambios, **When** se pulsa Deshacer 101 veces, **Then** solo se deshacen los últimos 100; y al cerrar y reabrir la aplicación no queda ningún cambio para deshacer. (AC-117)
 14. **Given** un compás de 4/4 vacío, **When** se escribe cada figura en el tiempo 1, **Then** ocupa en la grilla 192 unidades la redonda, 96 la blanca, 48 la negra, 24 la corchea y 12 la semicorchea. (AC-05)
+15. **Given** un compás con una negra de caja en el tiempo 1, **When** se hace clic sobre esa nota, **Then** queda seleccionada y la partitura no cambia; un clic en un lugar sin nota con la figura Negra elegida escribe una nota nueva. (AC-139)
+16. **Given** un compás de 4/4 con una negra de caja en el tiempo 1 y una de bombo en el tiempo 3, **When** se selecciona la caja y se pulsa Supr (o el botón Borrar), **Then** la caja desaparece, el bombo no cambia y la voz de manos muestra un silencio de compás completo; Deshacer la restaura. (AC-140)
 
 ---
 
@@ -315,7 +318,8 @@ Escenarios de aceptación de los requisitos de tiempos, seguridad, compatibilida
 - **FR-004**: El sistema MUST calcular y mostrar los silencios que completan cada compás, separando manos (plicas hacia arriba, todas las piezas salvo bombo y hi-hat con pie) y pies (plicas hacia abajo, bombo y hi-hat con pie). (RF-04)
 - **FR-005**: El sistema MUST unir con barras las corcheas y figuras menores dentro de un mismo tiempo, y marcar los tresillos con corchete y número. (RF-05)
 - **FR-006**: El sistema MUST permitir marcar y dibujar de forma distinta las articulaciones normal, acento, nota fantasma y flam, y reproducir cada una con un sonido distinto. (RF-06)
-- **FR-007**: El sistema MUST elegir la pieza por la altura del clic y la posición rítmica por la posición horizontal del clic. (RF-07)
+- **FR-007**: El sistema MUST elegir la pieza por la altura del clic y la posición rítmica por la posición horizontal del clic. Un clic sobre una nota ya escrita MUST seleccionarla sin borrarla ni escribir otra, y un clic sobre un lugar sin nota MUST escribir una. (RF-07, RF-07.3)
+- **FR-007a**: El sistema MUST permitir borrar la nota seleccionada con la tecla Supr o con un botón Borrar; el borrado cuenta como un cambio de Deshacer y los silencios del compás se recalculan solos. (RF-07.4)
 - **FR-008**: El sistema MUST permitir añadir compases hasta un máximo de 128 y quitar el último, sin permitir dejar la partitura sin compases. Toda operación que obligue a superar los 128 compases MUST descartar las notas que no entran y mostrar el mismo aviso de notas descartadas (hoy solo ocurre con el cambio de tipo de compás, FR-020a, porque una toma arranca en el compás 1 y dura como máximo 128). (RF-08, RF-08.5)
 - **FR-009**: El sistema MUST permitir deshacer cualquier cambio de la partitura, venga del mouse o de una toma grabada. El historial MUST conservar hasta los últimos 100 cambios y perderse al cerrar la aplicación. (RF-09, RF-09.1)
 
@@ -407,7 +411,7 @@ Lista de las pantallas, sus controles y sus estados, derivada de los requisitos 
 
 ### 2. Editor (pantalla principal)
 
-- **Controles de escritura**: pentagrama de percusión; selector de figura (redonda, blanca, negra, corchea, semicorchea) con tresillo activable; selector de articulación (normal, acento, fantasma, flam); Añadir compás; Quitar el último; Deshacer; Nueva partitura.
+- **Controles de escritura**: pentagrama de percusión; selector de figura (redonda, blanca, negra, corchea, semicorchea) con tresillo activable; selector de articulación (normal, acento, fantasma, flam); selección de nota con clic y Borrar (o tecla Supr); Añadir compás; Quitar el último; Deshacer; Nueva partitura.
 - **Controles de transporte**: Play/Detener; bucle; tempo (número entre 30 y 260); compás (numerador 1–16, denominador 2/4/8/16); metrónomo (activar y volumen propio); indicador de posición sobre la partitura.
 - **Controles de cuenta y guardado**: Guardar en la biblioteca (con nombre); acceso a la Biblioteca; Cerrar sesión.
 - **Estados**: cargando kit ("Cargando kit"); error de kit con "Reintentar"; sin conexión (aviso fijo, modo borrador, biblioteca deshabilitada con "Sin conexión" y kit no cargado); "No se están guardando los cambios"; aviso de notas descartadas por un cambio de tipo de compás; partitura recuperada al abrir.

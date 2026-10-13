@@ -32,7 +32,7 @@ Cada fila agrupa los AC del PRD que se prueban con Playwright. El resultado espe
 
 | # | Qué se valida | Historia del spec | AC principales | Cómo |
 |---|---|---|---|---|
-| 1 | Escribir con el mouse: posiciones, silencios, barras, tresillos, articulaciones, compases y Deshacer | 2 | AC-01 a AC-17, AC-117 | navegador, sin servidor |
+| 1 | Escribir con el mouse: posiciones, silencios, barras, tresillos, articulaciones, compases y Deshacer | 2 | AC-01 a AC-17, AC-117, AC-139, AC-140 | navegador, sin servidor |
 | 2 | Cambio de tipo de compás y tempo | 3 | AC-40 a AC-44, AC-108, AC-109, AC-134, AC-135 | navegador |
 | 3 | Reproducción, bucle, metrónomo y cuenta previa | 3 | AC-45 a AC-53, AC-85 | navegador con reloj controlado |
 | 4 | Kit: carga, error y reintento | 3 | AC-54, AC-55, AC-114 | navegador con red simulada |
